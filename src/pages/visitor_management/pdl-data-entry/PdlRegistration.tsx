@@ -120,6 +120,7 @@ const PdlRegistration = () => {
         multiple_birth_sibling_data: [],
     })
     const [pdlForm, setPdlForm] = useState<PDLForm>({
+        date_of_admission: "2025-04-10",
         case_data: [],
         gang_affiliation_id: null,
         jail_id: 1,
@@ -928,10 +929,10 @@ const PdlRegistration = () => {
                                 />
                             </div>
                             <div className='flex flex-col mt-2 flex-1'>
-                                <div className='flex gap-1 font-semibold'>Time Arrested</div>
+                                <div className='flex gap-1 font-semibold'>Date Arrested</div>
                                 <Input
                                     className='mt-2 px-3 py-2 rounded-md outline-gray-300'
-                                    type="time"
+                                    type="date"
                                     name="fname"
                                     placeholder="First Name"
                                     required

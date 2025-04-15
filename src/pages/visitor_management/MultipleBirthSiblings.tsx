@@ -1,4 +1,4 @@
-import { PersonForm } from "@/lib/visitorFormDefinition"
+import { MultiBirthSiblingForm as MultiBirthSiblingFormType, PersonForm } from "@/lib/visitorFormDefinition"
 import { Modal, Table } from "antd"
 import { ColumnsType } from "antd/es/table"
 import { Plus } from "lucide-react"
@@ -31,32 +31,81 @@ export type TableInfo = {
 
 export type MultiBirthSibling = TableInfo[] | null;
 
-const MultipleBirthSiblings = ({ handleDeleteMultipleBirthSibling, setPersonForm, persons, birthClassTypes, birthClassTypesLoading, genders, personsLoading, prefixes, suffixes }: Props) => {
+const MultipleBirthSiblings = ({
+    handleDeleteMultipleBirthSibling,
+    setPersonForm,
+    persons,
+    birthClassTypes,
+    birthClassTypesLoading,
+    genders,
+    personsLoading,
+    prefixes,
+    suffixes,
+    personForm
+}: Props) => {
     const [idsModalOpen, setIdsModalOpen] = useState(false)
+    const [isEditing, setIsEditing] = useState(false)
+    const [editIndex, setEditIndex] = useState<number | null>(null)
 
-    const handleModalOpen = () => {
+    const handleModalOpen = (index?: number) => {
+        if (index !== undefined) {
+            setIsEditing(true)
+            setEditIndex(index)
+        } else {
+            setIsEditing(false)
+            setEditIndex(null)
+        }
         setIdsModalOpen(true)
     }
 
     const handleModalClose = () => {
         setIdsModalOpen(false)
+        setIsEditing(false)
+        setEditIndex(null)
     }
 
     const [tableInfo, setTableInfo] = useState<MultiBirthSibling>([])
 
+    const handleEditMultipleBirthSibling = (index: number, updatedData: MultiBirthSiblingFormType) => {
+        // Update the personForm
+        setPersonForm(prev => {
+            const updatedSiblings = [...(prev.multiple_birth_sibling_data || [])];
+            updatedSiblings[index] = updatedData;
+            return {
+                ...prev,
+                multiple_birth_sibling_data: updatedSiblings
+            };
+        });
+
+        // Update the table info
+        setTableInfo(prev => {
+            const updatedTableInfo = [...(prev || [])];
+            const chosenSibling = persons?.find(person => person?.id === updatedData.person_id);
+            updatedTableInfo[index] = {
+                sibling_group: chosenSibling?.multiple_birth_siblings?.[0]?.multiple_birth_class || "",
+                short_name: chosenSibling?.shortname || "",
+                gender: chosenSibling?.gender?.gender_option || "",
+                identical: updatedData?.is_identical ? "Yes" : "No",
+                verified: updatedData?.is_verified ? "Yes" : "No",
+            };
+            return updatedTableInfo;
+        });
+    };
+
     const IdentifierDataSource = tableInfo?.map((info, index) => {
         return ({
             key: index,
-            siblingGroup: info?.sibling_group,
-            shortName: info?.short_name,
-            gender: info?.gender,
-            identical: info?.identical,
-            verified: info?.verified,
+            siblingGroup: info?.sibling_group ?? "N/A",
+            shortName: info?.short_name ?? "N/A",
+            gender: info?.gender ?? "N/A",
+            identical: info?.identical ?? "N/A",
+            verified: info?.verified ?? "N/A",
             actions: (
                 <div className="flex gap-1.5 font-semibold transition-all ease-in-out duration-200 justify-center items-center">
                     <button
                         type="button"
                         className="border border-blue-500 text-blue-500 hover:bg-blue-600 hover:text-white py-1 rounded w-10 h-10 flex items-center justify-center"
+                        onClick={() => handleModalOpen(index)}
                     >
                         <AiOutlineEdit />
                     </button>
@@ -74,7 +123,6 @@ const MultipleBirthSiblings = ({ handleDeleteMultipleBirthSibling, setPersonForm
             )
         })
     })
-
 
     const identifierColumn: ColumnsType<{
         siblingGroup: string;
@@ -117,19 +165,19 @@ const MultipleBirthSiblings = ({ handleDeleteMultipleBirthSibling, setPersonForm
             },
         ];
 
-
     return (
         <div className="flex flex-col gap-5 mt-10">
             <Modal
                 centered
                 className="overflow-y-auto rounded-lg scrollbar-hide"
-                title="Add"
+                title={isEditing ? "Edit Sibling" : "Add Sibling"}
                 open={idsModalOpen}
                 onCancel={handleModalClose}
                 footer={null}
                 width="50%"
             >
                 <MultiBirthSiblingForm
+                    personForm={personForm}
                     personLoading={personsLoading}
                     prefixes={prefixes}
                     suffixes={suffixes}
@@ -140,6 +188,9 @@ const MultipleBirthSiblings = ({ handleDeleteMultipleBirthSibling, setPersonForm
                     persons={persons}
                     setPersonForm={setPersonForm}
                     handleIdsModalCancel={handleModalClose}
+                    isEditing={isEditing}
+                    editIndex={editIndex}
+                    handleEditMultipleBirthSibling={handleEditMultipleBirthSibling}
                 />
             </Modal>
 
@@ -148,7 +199,7 @@ const MultipleBirthSiblings = ({ handleDeleteMultipleBirthSibling, setPersonForm
                 <button
                     className="flex gap-2 px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-400"
                     type="button"
-                    onClick={handleModalOpen}
+                    onClick={() => handleModalOpen()}
                 >
                     <Plus />
                     Add Sibling

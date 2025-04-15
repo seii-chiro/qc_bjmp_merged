@@ -4,23 +4,35 @@ import { Plus } from "lucide-react";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import React, { SetStateAction, useState } from "react";
 import FMCForm from "./FMCForm";
-import { PDLForm } from "@/lib/visitorFormDefinition";
+import { FamilyRelativesContactsForm } from "@/lib/visitorFormDefinition";
 import { Person } from "@/lib/pdl-definitions";
 import { useTokenStore } from "@/store/useTokenStore";
 import { useQuery } from "@tanstack/react-query";
 import { getVisitor_to_PDL_Relationship } from "@/lib/queries";
 import { Prefix, Suffix } from "@/lib/definitions";
 
-type Props = {
+export type HasPersonRelationships = {
+    person_relationship_data: FamilyRelativesContactsForm[];
+};
+
+type Props<T extends HasPersonRelationships> = {
     prefixes: Prefix[] | null;
     suffixes: Suffix[] | null;
     persons: Person[] | null;
     personsLoading: boolean;
-    pdlForm: PDLForm;
-    setPdlForm: React.Dispatch<SetStateAction<PDLForm>>;
-}
+    pdlForm: T;
+    setPdlForm: React.Dispatch<SetStateAction<T>>;
+};
 
-const FMC = ({ persons, personsLoading, pdlForm, setPdlForm, prefixes, suffixes }: Props) => {
+const FMC = <T extends HasPersonRelationships>({
+    persons,
+    personsLoading,
+    pdlForm,
+    setPdlForm,
+    prefixes,
+    suffixes
+}: Props<T>) => {
+
     const token = useTokenStore()?.token
 
     const [isModalOpen, setIsModalOpen] = useState(false)

@@ -7,7 +7,11 @@ import VisitorProfile from "./visitorprofile";
 import PDLtovisit from "./PDLtovisit";
 import Issue from "./Issue";
 import { useMutation, useQueries } from "@tanstack/react-query";
-import { getAffiliationTypes, getCivilStatus, getCountries, getCurrentUser, getGenders, getJail_Barangay, getJail_Municipality, getJail_Province, getJailRegion, getMultipleBirthClassTypes, getNationalities, getPrefixes, getRealPerson, getSuffixes, getUsers, getVisitor_Type, getVisitorAppStatus } from "@/lib/queries";
+import {
+    getAffiliationTypes, getCivilStatus, getCountries, getCurrentUser, getGenders, getJail_Barangay,
+    getJail_Municipality, getJail_Province, getJailRegion, getMultipleBirthClassTypes, getNationalities,
+    getPrefixes, getRealPerson, getSuffixes, getUsers, getVisitor_Type, getVisitorAppStatus
+} from "@/lib/queries";
 import { useTokenStore } from "@/store/useTokenStore";
 import { PersonForm, VisitorForm } from "@/lib/visitorFormDefinition";
 import { calculateAge } from "@/functions/calculateAge";
@@ -16,9 +20,7 @@ import ContactForm from "./ContactForm";
 import MultipleBirthSiblings from "./MultipleBirthSiblings";
 import Remarks from "./Remarks";
 import { BiometricRecordFace } from "@/lib/scanner-definitions";
-import { BIOMETRIC, PERSON } from "@/lib/urls";
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { BASE_URL, BIOMETRIC, PERSON } from "@/lib/urls";
 
 const addPerson = async (payload: PersonForm, token: string) => {
 
@@ -81,6 +83,10 @@ const VisitorRegistration = () => {
     const token = useTokenStore()?.token
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+    const [editAddressIndex, setEditAddressIndex] = useState<number | null>(null);
+    const [editContactIndex, setEditContactIndex] = useState<number | null>(null);
+    const [editPdlToVisitIndex, setEditPdlToVisitIndex] = useState<number | null>(null);
 
     const [personForm, setPersonForm] = useState<PersonForm>({
         first_name: "",
@@ -271,6 +277,18 @@ const VisitorRegistration = () => {
         setIsContactModalOpen(false);
     };
 
+    //Edit Handlers
+    const handleEditAddress = (index: number) => {
+        setEditAddressIndex(index);
+        setIsAddressModalOpen(true);
+    };
+
+    const handleEditContact = (index: number) => {
+        setEditContactIndex(index);
+        setIsContactModalOpen(true);
+    };
+
+    //Delete Handlers
     const handleDeleteAddress = (indexToDelete: number) => {
         setPersonForm(prev => ({
             ...prev,
@@ -508,27 +526,78 @@ const VisitorRegistration = () => {
         onError: () => message.error("Failed to register visitor")
     })
 
+    // const addPersonMutation = useMutation({
+    //     mutationKey: ['add-person-visitor'],
+    //     mutationFn: () => addPerson(personForm, token ?? ""),
+    //     onSuccess: (data) => {
+    //         addVisitorMutation.mutate(data?.id)
+    //         enrollFaceMutation.mutate(data?.id)
+    //         enrollLeftMutation.mutate(data?.id)
+    //         enrollRightMutation.mutate(data?.id)
+    //         enrollLeftLittleMutation.mutate(data?.id)
+    //         enrollLeftRingMutation.mutate(data?.id)
+    //         enrollLeftMiddleMutation.mutate(data?.id)
+    //         enrollLeftIndexMutation.mutate(data?.id)
+    //         enrollRightLittleMutation.mutate(data?.id)
+    //         enrollRightRingMutation.mutate(data?.id)
+    //         enrollRightMiddleMutation.mutate(data?.id)
+    //         enrollRightIndexMutation.mutate(data?.id)
+    //         enrollLeftThumbMutation.mutate(data?.id)
+    //         enrollRightThumbMutation.mutate(data?.id)
+    //         message?.success("Successfully Registered Person")
+    //     }
+    // })
+
+
     const addPersonMutation = useMutation({
         mutationKey: ['add-person-visitor'],
-        mutationFn: () => addPerson(personForm, token ?? ""),
-        onSuccess: (data) => {
-            addVisitorMutation.mutate(data?.id)
-            enrollFaceMutation.mutate(data?.id)
-            enrollLeftMutation.mutate(data?.id)
-            enrollRightMutation.mutate(data?.id)
-            enrollLeftLittleMutation.mutate(data?.id)
-            enrollLeftRingMutation.mutate(data?.id)
-            enrollLeftMiddleMutation.mutate(data?.id)
-            enrollLeftIndexMutation.mutate(data?.id)
-            enrollRightLittleMutation.mutate(data?.id)
-            enrollRightRingMutation.mutate(data?.id)
-            enrollRightMiddleMutation.mutate(data?.id)
-            enrollRightIndexMutation.mutate(data?.id)
-            enrollLeftThumbMutation.mutate(data?.id)
-            enrollRightThumbMutation.mutate(data?.id)
-            message?.success("Successfully Registered Person")
-        }
-    })
+        mutationFn: async () => {
+            if (!personForm.first_name ||
+                !personForm.last_name ||
+                !visitorForm.visitor_type_id ||
+                !personForm.gender_id ||
+                !personForm.date_of_birth ||
+                !personForm.place_of_birth ||
+                !personForm.civil_status_id
+            ) {
+                throw new Error("Please fill out all required fields");
+            }
+
+            return await addPerson(personForm, token ?? "");
+        },
+        onSuccess: async (data) => {
+            const id = data?.id;
+
+            try {
+                await Promise.all([
+                    addVisitorMutation.mutateAsync(id),
+                    ...(enrollFormFace?.upload_data ? [enrollFaceMutation.mutateAsync(id)] : []),
+                    ...(enrollFormLeftIris?.upload_data ? [enrollLeftMutation.mutateAsync(id)] : []),
+                    ...(enrollFormRightIris?.upload_data ? [enrollRightMutation.mutateAsync(id)] : []),
+                    ...(enrollLeftLittleFinger?.upload_data ? [enrollLeftLittleMutation.mutateAsync(id)] : []),
+                    ...(enrollLeftRingFinger?.upload_data ? [enrollLeftRingMutation.mutateAsync(id)] : []),
+                    ...(enrollLeftMiddleFinger?.upload_data ? [enrollLeftMiddleMutation.mutateAsync(id)] : []),
+                    ...(enrollLeftIndexFinger?.upload_data ? [enrollLeftIndexMutation.mutateAsync(id)] : []),
+                    ...(enrollLeftThumbFinger?.upload_data ? [enrollLeftThumbMutation.mutateAsync(id)] : []),
+                    ...(enrollRightLittleFinger?.upload_data ? [enrollRightLittleMutation.mutateAsync(id)] : []),
+                    ...(enrollRightRingFinger?.upload_data ? [enrollRightRingMutation.mutateAsync(id)] : []),
+                    ...(enrollRightMiddleFinger?.upload_data ? [enrollRightMiddleMutation.mutateAsync(id)] : []),
+                    ...(enrollRightIndexFinger?.upload_data ? [enrollRightIndexMutation.mutateAsync(id)] : []),
+                    ...(enrollRightThumbFinger?.upload_data ? [enrollRightThumbMutation.mutateAsync(id)] : []),
+                ]);
+
+                message?.success("Successfully Registered Person");
+            } catch (err) {
+                console.error("Enrollment error:", err);
+                message?.error("Some enrollment steps failed");
+            }
+        },
+        onError: (err) => {
+            message?.error(err.message || "Something went wrong!");
+        },
+    });
+
+
 
     const visitorTypes = dropdownOptions?.[0]?.data
     const genders = dropdownOptions?.[1]?.data
@@ -571,6 +640,7 @@ const VisitorRegistration = () => {
                 <div className="flex gap-1.5 font-semibold transition-all ease-in-out duration-200 justify-center items-center">
                     <button
                         type="button"
+                        onClick={() => handleEditAddress(index)}
                         className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white py-1 rounded w-10 h-10 flex items-center justify-center"
                     >
                         <AiOutlineEdit />
@@ -666,6 +736,7 @@ const VisitorRegistration = () => {
                 <div className="flex gap-1.5 font-semibold transition-all ease-in-out duration-200 justify-center items-center">
                     <button
                         type="button"
+                        onClick={() => handleEditContact(index)}
                         className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white py-1 rounded w-10 h-10 flex items-center justify-center"
                     >
                         <AiOutlineEdit />
@@ -737,8 +808,14 @@ const VisitorRegistration = () => {
         }))
     }, [visitorForm?.verified_by, currentUser?.id])
 
-    console.log("Person form: ", personForm)
-    console.log("Visitor form: ", visitorForm)
+    useEffect(() => {
+        const short = `${personForm?.first_name?.[0] ?? ""}${personForm?.last_name?.[0] ?? ""}`;
+        setPersonForm((prev) => ({ ...prev, shortname: short.toUpperCase() }));
+    }, [personForm.first_name, personForm.last_name]);
+
+
+    // console.log(visitorForm)
+    // console.log("Person Form: ", personForm)
 
     return (
         <div className='bg-white rounded-md shadow border border-gray-200 py-5 px-7 w-full mb-5'>
@@ -883,7 +960,7 @@ const VisitorRegistration = () => {
                                 />
                             </div>
                             <div className='flex flex-col mt-2 flex-[3]'>
-                                <div className='flex gap-1'>Gender</div>
+                                <div className='flex gap-1'>Gender<p className='text-red-600'>*</p></div>
                                 <Select
                                     className='mt-2 h-10 rounded-md outline-gray-300 !bg-gray-100'
                                     options={genders?.map(gender => ({
@@ -903,14 +980,17 @@ const VisitorRegistration = () => {
                         </div>
                         <div className="flex flex-col md:flex-row gap-2">
                             <div className='flex flex-col mt-2 flex-[4]'>
-                                <div className='flex gap-1'>Short Name<p className='text-red-600'>*</p></div>
+                                <div className='flex gap-1'>Short Name</div>
                                 <Input
                                     className='mt-2 px-3 py-2 rounded-md outline-gray-300'
-                                    type="text" name="short-name"
+                                    type="text"
+                                    name="short-name"
                                     placeholder="Short Name"
                                     required
-                                    onChange={(e) => setPersonForm(prev => ({ ...prev, shortname: e.target.value }))}
+                                    value={personForm.shortname ?? ""}
+                                    readOnly
                                 />
+
                             </div>
                             <div className='flex flex-col mt-2 flex-[2]'>
                                 <div className='flex gap-1'>Date of Birth<p className='text-red-600'>*</p></div>
@@ -1033,9 +1113,10 @@ const VisitorRegistration = () => {
                     </div>
                 </div>
             </form>
+
             <Modal
                 className="overflow-y-auto rounded-lg scrollbar-hide"
-                title="Add Address"
+                title={editAddressIndex !== null ? "Edit Address" : "Add Address"}
                 open={isAddressModalOpen}
                 onCancel={handleAddressCancel}
                 footer={null}
@@ -1049,13 +1130,15 @@ const VisitorRegistration = () => {
                     municipality={municipalities || []}
                     provinces={provinces || []}
                     regions={regions || []}
+                    editAddressIndex={editAddressIndex}
+                    personForm={personForm}
                 />
             </Modal>
 
             <Modal
                 centered
                 className="overflow-y-auto rounded-lg scrollbar-hide"
-                title="Add Address"
+                title={editContactIndex !== null ? "Edit Contact" : "Add Contact"}
                 open={isContactModalOpen}
                 onCancel={handleContactCancel}
                 footer={null}
@@ -1065,8 +1148,11 @@ const VisitorRegistration = () => {
                 <ContactForm
                     setPersonForm={setPersonForm}
                     handleContactCancel={handleContactCancel}
+                    editContactIndex={editContactIndex}
+                    personForm={personForm}
                 />
             </Modal>
+
             <VisitorProfile
                 icao={icao}
                 setIcao={setIcao}
@@ -1087,7 +1173,12 @@ const VisitorRegistration = () => {
                 setEnrollRightRingFinger={setEnrollRightRingFinger}
                 setEnrollRightThumbFinger={setEnrollRightThumbFinger}
             />
+
+            {/**PDL To Visit, Requirements, Identifiers*/}
             <PDLtovisit
+                visitorForm={visitorForm}
+                editPdlToVisitIndex={editPdlToVisitIndex}
+                setEditPdlToVisitIndex={setEditPdlToVisitIndex}
                 deleteMediaRequirementByIndex={deleteMediaRequirementByIndex}
                 deleteMediaIdentifierByIndex={deleteMediaIdentifierByIndex}
                 deletePdlToVisit={deletePdlToVisit}
@@ -1100,7 +1191,6 @@ const VisitorRegistration = () => {
             <Remarks
                 deleteRemarksByIndex={deleteRemarksByIndex}
                 currentUser={currentUser ?? null}
-                visitorForm={visitorForm}
                 setVisitorForm={setVisitorForm}
             />
 

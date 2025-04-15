@@ -116,7 +116,8 @@ interface Person {
   first_name: string;
   middle_name: string;
   last_name: string;
-  suffix: string;
+  suffix: number;
+  prefix: number;
   shortname: string;
   gender: Gender;
   date_of_birth: string;
@@ -137,10 +138,25 @@ interface Person {
   social_media_accounts: SocialMediaAccount[];
   affiliations: Affiliation[];
   diagnoses: Diagnosis[];
-  biometrics: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  biometrics: any[];
   media: string;
-  multiple_birth_class?: number;
+  multiple_birth_siblings: Sibling[];
 }
+
+export type Sibling = {
+  id: number;
+  person: string;
+  multiple_birth_class: string;
+  record_status: string;
+  created_at: string;
+  updated_at: string;
+  is_identical: boolean;
+  is_verified: boolean;
+  remarks: string;
+  created_by: number;
+  updated_by: number;
+};
 
 // Visitor
 interface Visitor {
@@ -150,7 +166,7 @@ interface Visitor {
   shortname: string;
   org: string;
   jail: string;
-  person: string; // If this is a Person object instead, change to: person: Person;
+  person: Person; // If this is a Person object instead, change to: person: Person;
   visitor_type: string;
   visitor_have_twins: boolean;
   visitor_twin_name: string;
@@ -241,5 +257,6 @@ export interface PDLs {
   cell: Cell;
   record_status: RecordStatus;
   visitor: Visitor[];
+  visitation_status: string;
   cases: Case[];
 }

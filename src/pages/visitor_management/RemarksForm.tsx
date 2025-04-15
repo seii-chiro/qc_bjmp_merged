@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UserAccounts } from "@/lib/definitions";
-import { RemarksForm as RemarksFormType, VisitorForm } from "@/lib/visitorFormDefinition";
+import { RemarksForm as RemarksFormType } from "@/lib/visitorFormDefinition";
 import { Input } from "antd";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
@@ -10,54 +11,91 @@ function getCurrentTimestamp(): string {
 type Props = {
     setRemarksTableInfo: Dispatch<SetStateAction<RemarksFormType[]>>;
     handleModalCancel: () => void;
-    setVisitorForm: Dispatch<SetStateAction<VisitorForm>>;
+    setVisitorForm: Dispatch<SetStateAction<any>>;
     currentUser: UserAccounts;
+    editingRemark: { index: number, data: RemarksFormType } | null;
+    setEditingRemark: Dispatch<SetStateAction<{ index: number, data: RemarksFormType } | null>>;
 }
 
-const RemarksForm = ({ currentUser, setVisitorForm, setRemarksTableInfo, handleModalCancel }: Props) => {
+const RemarksForm = ({
+    currentUser,
+    setVisitorForm,
+    setRemarksTableInfo,
+    handleModalCancel,
+    editingRemark,
+    setEditingRemark
+}: Props) => {
     const [remarksForm, setRemarksForm] = useState<RemarksFormType>({
         timestamp: "",
         created_by: "",
         remarks: ""
     });
 
+    // Initialize form with editing data if available
     useEffect(() => {
-        // Only update 'created_by' and 'timestamp' if currentUser is available
-        if (currentUser) {
+        if (editingRemark) {
+            setRemarksForm(editingRemark.data);
+        } else if (currentUser) {
             setRemarksForm(prev => ({
                 ...prev,
-                created_by: `${currentUser.first_name} ${currentUser.last_name}`, // Fix created_by
+                created_by: `${currentUser.first_name} ${currentUser.last_name}`,
                 timestamp: getCurrentTimestamp()
             }));
         }
-    }, [currentUser]);
+    }, [currentUser, editingRemark]);
 
     const handleSubmit = () => {
         if (remarksForm?.remarks) {
-            // Ensure we add the timestamp and created_by in the submitted remark
-            const newRemark: RemarksFormType = {
-                ...remarksForm,
-                timestamp: getCurrentTimestamp(), // Ensure the timestamp is set on every submit
-                created_by: `${currentUser.first_name} ${currentUser.last_name}` // Correctly set the full name
-            };
+            if (editingRemark !== null) {
+                // Handle edit mode
+                const updatedRemark: RemarksFormType = {
+                    ...remarksForm,
+                    // We can choose to update the timestamp on edit or keep the original
+                    timestamp: getCurrentTimestamp(), // Update timestamp to show when it was edited
+                };
 
-            setVisitorForm(prev => ({
-                ...prev,
-                remarks_data: [
-                    ...(prev.remarks_data || []),
-                    { remarks: remarksForm?.remarks }
-                ]
-            }));
+                // Update the remarks table info
+                setRemarksTableInfo(prev => {
+                    const updated = [...prev];
+                    updated[editingRemark.index] = updatedRemark;
+                    return updated;
+                });
 
-            setRemarksTableInfo(prev => ([...prev, newRemark])); // Add the new remark with correct timestamp
+                // Update the visitorForm remarks_data
+                setVisitorForm((prev: { remarks_data: any; }) => {
+                    const updatedRemarks = [...(prev.remarks_data || [])];
+                    updatedRemarks[editingRemark.index] = { remarks: remarksForm.remarks };
+                    return {
+                        ...prev,
+                        remarks_data: updatedRemarks
+                    };
+                });
+            } else {
+                // Handle create mode (existing functionality)
+                const newRemark: RemarksFormType = {
+                    ...remarksForm,
+                    timestamp: getCurrentTimestamp(),
+                    created_by: `${currentUser.first_name} ${currentUser.last_name}`
+                };
 
-            // Reset form
+                setVisitorForm((prev: { remarks_data: any; }) => ({
+                    ...prev,
+                    remarks_data: [
+                        ...(prev.remarks_data || []),
+                        { remarks: remarksForm?.remarks }
+                    ]
+                }));
+
+                setRemarksTableInfo(prev => ([...prev, newRemark]));
+            }
+
+            // Reset form and editing state
             setRemarksForm({
                 timestamp: "",
                 created_by: "",
                 remarks: ""
             });
-
+            setEditingRemark(null);
             handleModalCancel();
         }
     }
@@ -68,7 +106,7 @@ const RemarksForm = ({ currentUser, setVisitorForm, setRemarksTableInfo, handleM
             created_by: "",
             remarks: ""
         });
-
+        setEditingRemark(null);
         handleModalCancel();
     }
 
@@ -101,7 +139,7 @@ const RemarksForm = ({ currentUser, setVisitorForm, setRemarksTableInfo, handleM
                                 className="bg-blue-500 text-white rounded-md py-2 px-6 flex-1"
                                 onClick={handleSubmit}
                             >
-                                Add
+                                {editingRemark ? 'Update' : 'Add'}
                             </button>
                         </div>
                     </div>

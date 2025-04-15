@@ -16,49 +16,115 @@ type Props = {
     prefixes: Prefix[];
     suffixes: Suffix[];
     personLoading: boolean
+    personForm: PersonForm
+    isEditing: boolean;
+    editIndex: number | null;
+    handleEditMultipleBirthSibling: (index: number, updatedData: MultiBirthSiblingFormType) => void
 }
 
-const MultiBirthSiblingForm = ({ persons, setPersonForm, handleIdsModalCancel, prefixes, personLoading, setTableInfo, suffixes }: Props) => {
+const MultiBirthSiblingForm = ({
+    persons,
+    setPersonForm,
+    handleIdsModalCancel,
+    prefixes,
+    personLoading,
+    setTableInfo,
+    suffixes,
+    personForm,
+    isEditing = false,
+    editIndex = null,
+    handleEditMultipleBirthSibling
+}: Props) => {
     const [chosenSibling, setChosenSibling] = useState<Person | null>(null)
+    const [error, setError] = useState<string | null>(null)
     const [multiBirthSiblingForm, setMultiBirthSiblingForm] = useState<MultiBirthSiblingFormType>({
         is_identical: true,
         is_verified: false,
-        multiple_birth_class_id: 1,
+        multiple_birth_class_id: null,
         remarks: "",
         person_id: null,
     })
 
-    const handleSubmit = () => {
-        setPersonForm(prev => ({
-            ...prev,
-            multiple_birth_sibling_data: [
-                ...(prev?.multiple_birth_sibling_data || []),
-                multiBirthSiblingForm
-            ]
-        }));
+    // Load data when editing
+    useEffect(() => {
+        if (isEditing && editIndex !== null && personForm?.multiple_birth_sibling_data) {
+            const siblingToEdit = personForm.multiple_birth_sibling_data[editIndex];
+            if (siblingToEdit) {
+                setMultiBirthSiblingForm(siblingToEdit);
 
-        // Fixing setTableInfo to correctly handle the array update
-        setTableInfo(prev => [
-            ...(prev || []), // Ensure 'prev' is an array by defaulting to an empty array
-            {
-                sibling_group: chosenSibling?.multiple_birth_siblings?.[0]?.multiple_birth_class || "",
-                short_name: chosenSibling?.shortname || "",
-                gender: chosenSibling?.gender?.gender_option || "",
-                identical: multiBirthSiblingForm?.is_identical ? "Yes" : "No",
-                verified: multiBirthSiblingForm?.is_verified ? "Yes" : "No",
+                // Find the chosen sibling
+                const sibling = persons?.find(person => person?.id === siblingToEdit.person_id);
+                if (sibling) {
+                    setChosenSibling(sibling);
+                }
             }
-        ]);
+        }
+    }, [isEditing, editIndex, personForm?.multiple_birth_sibling_data, persons]);
 
+    const checkForDuplicate = (personId: number | null) => {
+        if (!personId) return false;
+
+        // Skip the current entry when editing
+        const existingSiblings = personForm?.multiple_birth_sibling_data || [];
+        return existingSiblings.some((sibling, index) => {
+            // When editing, don't count the current entry as a duplicate
+            if (isEditing && index === editIndex) {
+                return false;
+            }
+            return sibling.person_id === personId;
+        });
+    };
+
+    const handleSubmit = () => {
+        // Validation to check if person_id exists
+        if (!multiBirthSiblingForm.person_id) {
+            setError("Please select a person");
+            return;
+        }
+
+        // Check if this sibling already exists in the form data
+        const isDuplicate = checkForDuplicate(multiBirthSiblingForm.person_id);
+        if (isDuplicate) {
+            setError("This person has already been added as a sibling");
+            return;
+        }
+
+        if (isEditing && editIndex !== null) {
+            // Update existing entry
+            handleEditMultipleBirthSibling(editIndex, multiBirthSiblingForm);
+        } else {
+            // Add new entry
+            setPersonForm(prev => ({
+                ...prev,
+                multiple_birth_sibling_data: [
+                    ...(prev?.multiple_birth_sibling_data || []),
+                    multiBirthSiblingForm
+                ]
+            }));
+
+            // Add to tableInfo
+            setTableInfo(prev => [
+                ...(prev || []),
+                {
+                    sibling_group: chosenSibling?.multiple_birth_siblings?.[0]?.multiple_birth_class || "",
+                    short_name: chosenSibling?.shortname || "",
+                    gender: chosenSibling?.gender?.gender_option || "",
+                    identical: multiBirthSiblingForm?.is_identical ? "Yes" : "No",
+                    verified: multiBirthSiblingForm?.is_verified ? "Yes" : "No",
+                }
+            ]);
+        }
+
+        // Reset form
         setMultiBirthSiblingForm({
             is_identical: true,
             is_verified: false,
             multiple_birth_class_id: 1,
             remarks: "",
             person_id: null,
-        })
-
-        setChosenSibling(null)
-
+        });
+        setChosenSibling(null);
+        setError(null);
         handleIdsModalCancel();
     };
 
@@ -71,6 +137,7 @@ const MultiBirthSiblingForm = ({ persons, setPersonForm, handleIdsModalCancel, p
             person_id: null,
         })
         setChosenSibling(null)
+        setError(null)
         handleIdsModalCancel();
     }
 
@@ -79,10 +146,12 @@ const MultiBirthSiblingForm = ({ persons, setPersonForm, handleIdsModalCancel, p
             setMultiBirthSiblingForm(prev => ({
                 ...prev,
                 multiple_birth_class_id: chosenSibling?.multiple_birth_siblings?.[0]?.id ?? 1
-
             }))
 
             setChosenSibling(persons?.find(person => person?.id === multiBirthSiblingForm?.person_id) ?? null)
+
+            // Clear any previous error when a person is selected
+            setError(null)
         }
 
     }, [multiBirthSiblingForm?.person_id, persons, chosenSibling?.multiple_birth_siblings])
@@ -98,20 +167,27 @@ const MultiBirthSiblingForm = ({ persons, setPersonForm, handleIdsModalCancel, p
                             loading={personLoading}
                             showSearch
                             optionFilterProp="label"
-                            className='mt-2 h-10 rounded-md outline-gray-300 !bg-gray-100'
+                            className='mt-2 h-10 rounded'
                             options={persons?.map(person => ({
                                 value: person?.id,
                                 label: `${person?.first_name ?? ""} ${person?.middle_name ?? ""} ${person?.last_name ?? ""}`
                             }))}
                             onChange={(value) => {
-                                setMultiBirthSiblingForm(prev => (
-                                    {
+                                // Check for duplicates when changing the selection
+                                const isDuplicate = checkForDuplicate(value);
+                                if (isDuplicate) {
+                                    setError("This person has already been added as a sibling");
+                                } else {
+                                    setError(null);
+                                    setMultiBirthSiblingForm(prev => ({
                                         ...prev,
                                         person_id: value
-                                    }
-                                ))
+                                    }));
+                                }
                             }}
+                            status={error ? "error" : ""}
                         />
+                        {error && <div className="text-red-500 text-sm mt-1">{error}</div>}
                     </label>
                 </div>
                 <div className="flex gap-2">
@@ -210,6 +286,7 @@ const MultiBirthSiblingForm = ({ persons, setPersonForm, handleIdsModalCancel, p
                         <span className="font-semibold">Remarks</span>
                         <Input.TextArea
                             className="!h-40"
+                            value={multiBirthSiblingForm.remarks}
                             onChange={e => setMultiBirthSiblingForm(prev => ({ ...prev, remarks: e.target.value }))}
                         />
                     </label>
@@ -227,8 +304,9 @@ const MultiBirthSiblingForm = ({ persons, setPersonForm, handleIdsModalCancel, p
                             type="button"
                             className="bg-blue-500 text-white rounded-md py-2 px-6 flex-1 font-semibold"
                             onClick={handleSubmit}
+                            disabled={!!error}
                         >
-                            Add
+                            {isEditing ? "Update" : "Add"}
                         </button>
                     </div>
                 </div>

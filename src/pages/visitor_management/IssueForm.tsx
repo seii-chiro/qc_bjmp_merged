@@ -2,18 +2,20 @@ import React, { useEffect } from "react";
 import { Form, Button, Select, Row, Col, Typography, Space } from "antd";
 import { IssueFormData } from "./Issue";
 import { SaveOutlined, CloseOutlined } from "@ant-design/icons";
-import { Impact, ImpactLevel, Issue, IssueStatus, RecommendedAction, Risk, RiskLevel } from "@/lib/definitions";
+import { Impact, ImpactLevel, IssueCategory, IssueStatus, IssueType, RecommendedAction, Risk, RiskLevel } from "@/lib/definitions";
 
 const { Option } = Select;
 
 interface IssueFormProps {
+    issueCategories: IssueCategory[];
+    issueCategoriesLoading: boolean;
     setIssueTable: React.Dispatch<React.SetStateAction<IssueFormData[]>>;
     onCancel: () => void;
     initialData: IssueFormData | null;
     updateIssue: (index: number, updatedData: IssueFormData) => void;
     editIndex: number | null;
-    issues: Issue[];
-    issuesLoading: boolean;
+    issueTypes: IssueType[];
+    issueTypesLoading: boolean;
     issueStatuses: IssueStatus[];
     issueStatusesLoading: boolean;
     risks: Risk[];
@@ -40,14 +42,16 @@ const IssueForm: React.FC<IssueFormProps> = ({
     impactLoading,
     issueStatuses,
     issueStatusesLoading,
-    issues,
-    issuesLoading,
     recommendedActions,
     recommendedActionsLoading,
     riskLevels,
     riskLevelsLoading,
     risks,
-    risksLoading
+    risksLoading,
+    issueCategories,
+    issueCategoriesLoading,
+    issueTypes,
+    issueTypesLoading
 }) => {
     const [form] = Form.useForm();
 
@@ -63,12 +67,13 @@ const IssueForm: React.FC<IssueFormProps> = ({
         // Mapping IDs to names before saving
         const updatedValues = {
             ...values,
-            issue: issues.find(issue => issue.id === +values.issue)?.description || '',
-            riskLevel: riskLevels.find(level => level.id === +values.riskLevel)?.risk_severity || '',
-            impactLevel: impactLevels.find(level => level.id === +values.impactLevel)?.impact_level || '',
-            impact: impact.find(impactItem => impactItem.id === +values.impact)?.name || '',
-            recommendedAction: recommendedActions.find(action => action.id === +values.recommendedAction)?.name || '',
-            status: issueStatuses.find(status => status.id === +values.status)?.description || ''
+            issue: issueCategories.find(issue => issue.id === +values.issue)?.name || 'N/A',
+            risk: risks.find(risk => risk?.id === +values?.risks)?.name || 'N/A',
+            riskLevel: riskLevels.find(level => level.id === +values.riskLevel)?.risk_severity || 'N/A',
+            impactLevel: impactLevels.find(level => level.id === +values.impactLevel)?.impact_level || 'N/A',
+            impact: impact.find(impactItem => impactItem.id === +values.impact)?.name || 'N/A',
+            recommendedAction: recommendedActions.find(action => action.id === +values.recommendedAction)?.name || 'N/A',
+            status: issueStatuses.find(status => status.id === +values.status)?.description || 'N/A'
         };
 
         if (editIndex !== null) {
@@ -92,22 +97,21 @@ const IssueForm: React.FC<IssueFormProps> = ({
                 onFinish={onFinish}
                 layout="vertical"
                 initialValues={initialData || {}}
-                requiredMark="optional"
             >
                 <Form.Item
                     name="issue"
                     label="Issue"
-                    rules={[{ required: false, message: "Please select an issue" }]}
+                    rules={[{ required: true, message: "Please select an issue" }]}
                 >
-                    <Select placeholder="Select level" loading={issuesLoading} className="h-12">
-                        {issues.map(option => (
-                            <Option key={option?.id} value={option?.id}>{option?.description}</Option>
+                    <Select placeholder="Select level" loading={issueCategoriesLoading} className="h-12">
+                        {issueCategories.map(option => (
+                            <Option key={option?.id} value={option?.id}>{option?.name}</Option>
                         ))}
                     </Select>
                 </Form.Item>
 
                 <Form.Item
-                    name="risk"
+                    name="risks"
                     label="Risks"
                     rules={[{ required: true, message: "Please select a risk" }]}
                 >

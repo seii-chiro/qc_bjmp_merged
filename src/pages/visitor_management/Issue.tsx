@@ -5,7 +5,7 @@ import { useState } from "react";
 import IssueForm from "./IssueForm"; // Make sure to import IssueFormData
 import { ColumnsType } from "antd/es/table"; // Import ColumnsType for type safety
 import { useQueries } from "@tanstack/react-query";
-import { getImpactLevels, getImpacts, getIssues, getIssueStatuses, getRecommendedActions, getRiskLevels, getRisks } from "@/lib/queries";
+import { getImpactLevels, getImpacts, getIssueCategories, getIssueStatuses, getIssueTypes, getRecommendedActions, getRiskLevels, getRisks } from "@/lib/queries";
 import { useTokenStore } from "@/store/useTokenStore";
 
 export type IssueFormData = {
@@ -29,8 +29,8 @@ const Issue = () => {
     const results = useQueries({
         queries: [
             {
-                queryKey: ['get-issues'],
-                queryFn: () => getIssues(token ?? "")
+                queryKey: ['get-issue-types'],
+                queryFn: () => getIssueTypes(token ?? "")
             },
             {
                 queryKey: ['get-issue-statuses'],
@@ -56,11 +56,15 @@ const Issue = () => {
                 queryKey: ['get-recommended-actions'],
                 queryFn: () => getRecommendedActions(token ?? "")
             },
+            {
+                queryKey: ['get-issue-categories'],
+                queryFn: () => getIssueCategories(token ?? "")
+            },
         ]
     })
 
-    const issues = results?.[0]?.data
-    const issuesLoading = results?.[0]?.isLoading
+    const issueTypes = results?.[0]?.data
+    const issueTypesLoading = results?.[0]?.isLoading
 
     const issueStatuses = results?.[1]?.data
     const issueStatusesLoading = results?.[1]?.isLoading
@@ -79,6 +83,9 @@ const Issue = () => {
 
     const recommendedActions = results?.[6]?.data
     const recommendedActionsLoading = results?.[6]?.isLoading
+
+    const issueCategories = results?.[7]?.data
+    const issueCategoriesLoading = results?.[7]?.isLoading
 
     const handleOpenModal = (index?: number) => {
         if (index !== undefined) {
@@ -165,6 +172,8 @@ const Issue = () => {
         },
     ];
 
+    console.log(issueTable)
+
     return (
         <div>
             <div>
@@ -192,8 +201,10 @@ const Issue = () => {
             </div>
             <Modal footer={null} open={openModal} onCancel={handleCloseModal} width={"40%"}>
                 <IssueForm
-                    issues={issues ?? []}
-                    issuesLoading={issuesLoading}
+                    issueCategories={issueCategories ?? []}
+                    issueCategoriesLoading={issueCategoriesLoading}
+                    issueTypes={issueTypes ?? []}
+                    issueTypesLoading={issueTypesLoading}
                     issueStatuses={issueStatuses ?? []}
                     issueStatusesLoading={issueStatusesLoading}
                     risks={risks ?? []}

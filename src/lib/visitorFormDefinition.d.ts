@@ -174,7 +174,7 @@ export type VisitorForm = {
   person_id: number;
   visitor_type_id: number;
   record_status_id: number;
-  pdl: VisitorPdl[];
+  pdl_data: VisitorPdl[];
   verified_by: number;
   approved_by: number;
   remarks_data: RemarksData[];
@@ -224,9 +224,11 @@ export type PDLForm = {
   cell_id: number | null;
   floor_id: number | null;
   building_id: number | null;
+  date_of_admission: string | null;
 };
 
 export type CasesDetailsForm = {
+  case_number: string | null;
   offense: number | null;
   court_branch_id: number | null;
   court_name?: string;

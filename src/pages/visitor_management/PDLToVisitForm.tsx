@@ -7,6 +7,8 @@ import { PdlToVisitForm } from './PDLtovisit';
 
 
 type Props = {
+    visitorForm: VisitorForm;
+    editPdlToVisitIndex: number | null;
     setVisitorForm: Dispatch<SetStateAction<VisitorForm>>;
     visitorToPdlRelationship: VisitortoPDLRelationship[] | null;
     setPdlToVisitTableInfo: Dispatch<SetStateAction<PdlToVisitForm[] | null>>
@@ -16,21 +18,63 @@ type Props = {
     handlePdlToVisitModalCancel: () => void;
 }
 
-const PDLToVisitForm = ({ setVisitorForm, visitorToPdlRelationship, pdls, pdlsLoading, setPdlToVisitTableInfo, pdlToVisitTableInfo, handlePdlToVisitModalCancel }: Props) => {
-    const [pdlToVisitID, setPdlToVisitID] = useState<number | null>(null)
+const PDLToVisitForm = ({
+    setVisitorForm,
+    visitorToPdlRelationship,
+    pdls,
+    pdlsLoading,
+    setPdlToVisitTableInfo,
+    pdlToVisitTableInfo,
+    handlePdlToVisitModalCancel,
+    editPdlToVisitIndex,
+    visitorForm
+}: Props) => {
+    const [pdlToVisitID, setPdlToVisitID] = useState<number | null>(() => {
+        if (editPdlToVisitIndex !== null && visitorForm?.pdl?.[editPdlToVisitIndex]) {
+            return visitorForm.pdl[editPdlToVisitIndex].pdl
+        }
+        return null
+    })
+
     const [selectedPdl, setSelectedPdl] = useState<PDLs | null>(null);
 
-    const [helperForm, setHelperForm] = useState<PdlToVisitForm>({
-        lastName: null,
-        firstName: null,
-        middleName: null,
-        relationship: null,
-        level: null,
-        annex: null,
-        dorm: null,
-        visitationStatus: null,
-        multipleBirthClass: null,
+    const [helperForm, setHelperForm] = useState<PdlToVisitForm>(() => {
+        if (editPdlToVisitIndex !== null && pdlToVisitTableInfo?.[editPdlToVisitIndex]) {
+            // We're editing, use the existing data
+            return { ...pdlToVisitTableInfo?.[editPdlToVisitIndex ?? 0] };
+        }
+
+        return {
+            lastName: null,
+            firstName: null,
+            middleName: null,
+            relationship: null,
+            level: null,
+            annex: null,
+            dorm: null,
+            visitationStatus: null,
+            multipleBirthClass: null,
+        }
     })
+
+    useEffect(() => {
+        if (editPdlToVisitIndex !== null && pdlToVisitTableInfo && pdlToVisitTableInfo[editPdlToVisitIndex]) {
+            setHelperForm({ ...pdlToVisitTableInfo[editPdlToVisitIndex] });
+        } else {
+            // Reset to default values for new address
+            setHelperForm({
+                lastName: null,
+                firstName: null,
+                middleName: null,
+                relationship: null,
+                level: null,
+                annex: null,
+                dorm: null,
+                visitationStatus: null,
+                multipleBirthClass: null,
+            });
+        }
+    }, [editPdlToVisitIndex, pdlToVisitTableInfo]);
 
     useEffect(() => {
         if (pdlToVisitID !== null) {
@@ -54,24 +98,109 @@ const PDLToVisitForm = ({ setVisitorForm, visitorToPdlRelationship, pdls, pdlsLo
 
 
     const insertHelperForm = () => {
-        // Check if an entry with the same values already exists (you can define the condition here)
-        const exists = pdlToVisitTableInfo.some(entry =>
-            entry.lastName === helperForm.lastName &&
-            entry.firstName === helperForm.firstName &&
-            entry.middleName === helperForm.middleName &&
-            entry.relationship === helperForm.relationship &&
-            entry.level === helperForm.level &&
-            entry.annex === helperForm.annex &&
-            entry.dorm === helperForm.dorm &&
-            entry.visitationStatus === helperForm.visitationStatus &&
-            entry.multipleBirthClass === helperForm.multipleBirthClass
-        );
+        const isEdit = editPdlToVisitIndex !== null;
 
-        // If no duplicate, insert the helperForm data
-        if (!exists) {
+        const exists = pdlToVisitTableInfo.some((entry, index) => {
+            // Skip the current index if editing
+            if (isEdit && index === editPdlToVisitIndex) return false;
+
+            return (
+                entry.lastName === helperForm.lastName &&
+                entry.firstName === helperForm.firstName &&
+                entry.middleName === helperForm.middleName &&
+                entry.relationship === helperForm.relationship &&
+                entry.level === helperForm.level &&
+                entry.annex === helperForm.annex &&
+                entry.dorm === helperForm.dorm &&
+                entry.visitationStatus === helperForm.visitationStatus &&
+                entry.multipleBirthClass === helperForm.multipleBirthClass
+            );
+        });
+
+        if (exists) {
+            message.error("This PDL is already in the list.");
+            return;
+        }
+
+        if (isEdit) {
+            setPdlToVisitTableInfo(prev => {
+                const updated = [...(prev || [])];
+                updated[editPdlToVisitIndex!] = helperForm;
+                return updated;
+            });
+        } else {
             setPdlToVisitTableInfo(prevState => [...(prevState || []), helperForm]);
         }
     };
+
+
+    const handleAddPdlToVisit = () => {
+        if (selectedPdl === null) {
+            message.error("Please select a PDL to visit");
+            return;
+        }
+
+        if (!helperForm?.relationship) {
+            message.error("Please select a relationship");
+            return;
+        }
+
+        const newPdlId = pdlToVisitID as number;
+        const isEdit = editPdlToVisitIndex !== null;
+
+        const newEntry = {
+            pdl: newPdlId,
+            relationship_to_pdl: helperForm.relationship as number,
+        };
+
+        // Prevent duplicates
+        const isAlreadyInVisitorForm = visitorForm?.pdl?.some((item, idx) => {
+            if (isEdit && idx === editPdlToVisitIndex) return false;
+            return item.pdl === newPdlId;
+        });
+
+        if (isAlreadyInVisitorForm) {
+            message.warning("This PDL has already been added.");
+            return;
+        }
+
+        setVisitorForm(prev => {
+            const updated = [...(prev.pdl || [])];
+
+            if (isEdit) {
+                updated[editPdlToVisitIndex!] = newEntry;
+            } else {
+                updated.push(newEntry);
+            }
+
+            return {
+                ...prev,
+                pdl: updated,
+            };
+        });
+
+        message.success(isEdit ? "PDL to visit updated successfully!" : "PDL to visit added successfully!");
+        insertHelperForm();
+
+        // Reset
+        setPdlToVisitID(null);
+        setSelectedPdl(null);
+        setHelperForm({
+            lastName: null,
+            firstName: null,
+            middleName: null,
+            relationship: null,
+            level: null,
+            annex: null,
+            dorm: null,
+            visitationStatus: null,
+            multipleBirthClass: null,
+        });
+
+        handlePdlToVisitModalCancel();
+    };
+
+
 
     return (
         <div className='w-full'>
@@ -199,16 +328,21 @@ const PDLToVisitForm = ({ setVisitorForm, visitorToPdlRelationship, pdls, pdlsLo
                         </div>
                     </div>
                     <div className='flex-1'>
-                        <div className="border border-gray-400 bg-gray-200 rounded w-full h-full">
+                        <div className="border border-gray-100 bg-gray-200 rounded w-full h-full">
                             {
-                                selectedPdl?.person?.biometrics && (
-                                    // Find the object with the type 'face' in the biometrics array
-                                    selectedPdl?.person?.biometrics.find(bio => bio.type === "face")?.image && (
-                                        <img
-                                            src={selectedPdl?.person?.biometrics.find(bio => bio.type === "face")?.image}
-                                            alt="pdl image"
-                                        />
-                                    )
+                                !selectedPdl ? (
+                                    <div className='w-full h-full flex items-center justify-center'>
+                                        <h2 className='text-3xl font-bold text-gray-600'>Select a PDL to visit</h2>
+                                    </div>
+                                ) : selectedPdl?.person?.biometrics?.find(bio => bio.type === "face")?.image ? (
+                                    <img
+                                        src={selectedPdl?.person?.biometrics.find(bio => bio.type === "face")?.image}
+                                        alt="pdl image"
+                                    />
+                                ) : (
+                                    <div className='w-full h-full flex items-center justify-center'>
+                                        <h2 className='text-3xl font-bold text-gray-600'>No Image Available</h2>
+                                    </div>
                                 )
                             }
                         </div>
@@ -241,42 +375,7 @@ const PDLToVisitForm = ({ setVisitorForm, visitorToPdlRelationship, pdls, pdlsLo
                     <button
                         type="button"
                         className="bg-blue-500 text-white rounded-md py-2 px-6 flex-1"
-                        onClick={() => {
-                            // Only proceed if relationship is selected
-                            if (!helperForm?.relationship) {
-                                message.error("Please select a relationship");
-                                return;
-                            }
-
-                            message.success("PDL to visit added successfully!");
-                            setVisitorForm(prev => {
-                                const alreadySelected = prev.pdl?.some(visitorPdl => visitorPdl.pdl === pdlToVisitID);
-                                return {
-                                    ...prev,
-                                    pdl: alreadySelected
-                                        ? prev.pdl
-                                        : [...(prev.pdl || []), {
-                                            pdl: pdlToVisitID as number,
-                                            relationship_to_pdl: helperForm.relationship as number // Ensure it's always a number
-                                        }].filter(item => item.pdl !== null)
-                                };
-                            });
-                            insertHelperForm();
-                            setPdlToVisitID(null)
-                            setSelectedPdl(null)
-                            setHelperForm({
-                                lastName: null,
-                                firstName: null,
-                                middleName: null,
-                                relationship: null,
-                                level: null,
-                                annex: null,
-                                dorm: null,
-                                visitationStatus: null,
-                                multipleBirthClass: null,
-                            })
-                            handlePdlToVisitModalCancel()
-                        }}
+                        onClick={handleAddPdlToVisit}
                     >
                         Add
                     </button>

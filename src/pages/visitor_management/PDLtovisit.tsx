@@ -4,7 +4,7 @@ import { useQueries } from "@tanstack/react-query";
 import { Table, Modal } from "antd";
 import { Plus } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
-import { AiOutlineDelete, AiOutlineEdit, AiOutlineFileSearch } from "react-icons/ai";
+import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import PDLToVisitForm from "./PDLToVisitForm";
 import RequirementsForm from "./RequirementsForm";
 import IdForm from "./IdForm";
@@ -20,7 +20,10 @@ type Props = {
     deletePdlToVisit: (index: number) => void;
     setPersonForm: Dispatch<SetStateAction<PersonForm>>;
     setVisitorForm: Dispatch<SetStateAction<VisitorForm>>;
-    personForm: PersonForm
+    personForm: PersonForm;
+    editPdlToVisitIndex: number | null;
+    setEditPdlToVisitIndex: Dispatch<SetStateAction<number | null>>;
+    visitorForm: VisitorForm;
 }
 
 export type PdlToVisitForm = {
@@ -37,7 +40,17 @@ export type PdlToVisitForm = {
 
 type PdlToVisitTable = PdlToVisitForm[] | null
 
-const PDLtovisit = ({ setPersonForm, personForm, setVisitorForm, deletePdlToVisit, deleteMediaIdentifierByIndex, deleteMediaRequirementByIndex }: Props) => {
+const PDLtovisit = ({
+    setPersonForm,
+    personForm,
+    setVisitorForm,
+    deletePdlToVisit,
+    deleteMediaIdentifierByIndex,
+    deleteMediaRequirementByIndex,
+    editPdlToVisitIndex,
+    setEditPdlToVisitIndex,
+    visitorForm
+}: Props) => {
     const token = useTokenStore()?.token
 
     const idFullscreenHandle = useFullScreenHandle()
@@ -48,6 +61,9 @@ const PDLtovisit = ({ setPersonForm, personForm, setVisitorForm, deletePdlToVisi
     const [idsModalOpen, setIdsModalOpen] = useState(false)
 
     const [pdlToVisitTableInfo, setPdlToVisitTableInfo] = useState<PdlToVisitTable>([])
+
+    const [requirementIndexToEdit, setRequirementIndexToEdit] = useState<number | null>(null);
+    const [idIndexToEdit, setIdIndexToEdit] = useState<number | null>(null);
 
     const results = useQueries({
         queries: [
@@ -95,9 +111,24 @@ const PDLtovisit = ({ setPersonForm, personForm, setVisitorForm, deletePdlToVisi
         setIdsModalOpen(false)
     }
 
+    const handleEditAddress = (index: number) => {
+        setEditPdlToVisitIndex(index);
+        setPdlToVisitModalOpen(true);
+    };
+
     const handleDeletePdl = (index: number) => {
         setPdlToVisitTableInfo(prev => prev?.filter((_, i) => i !== index) || []);
         deletePdlToVisit(index)
+    };
+
+    const handleEditRequirement = (index: number) => {
+        setRequirementIndexToEdit(index);
+        setRequirementModalOpen(true); // or however you open the modal
+    };
+
+    const handleIdRequirement = (index: number) => {
+        setIdIndexToEdit(index);
+        setIdsModalOpen(true); // or however you open the modal
     };
 
 
@@ -107,7 +138,7 @@ const PDLtovisit = ({ setPersonForm, personForm, setVisitorForm, deletePdlToVisi
             lastname: pdl?.lastName,
             firstName: pdl?.firstName,
             middleName: pdl?.middleName,
-            relationship: pdl?.relationship,
+            relationship: visitorToPdlRelationship?.find(relation => relation?.id === pdl?.relationship)?.relationship_name ?? "N/A",
             level: pdl?.level,
             annex: pdl?.annex,
             dorm: pdl?.dorm,
@@ -117,16 +148,17 @@ const PDLtovisit = ({ setPersonForm, personForm, setVisitorForm, deletePdlToVisi
                 <div className="flex gap-1.5 font-semibold transition-all ease-in-out duration-200 justify-center items-center">
                     <button
                         type="button"
+                        onClick={() => handleEditAddress(index)}
                         className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white py-1 rounded w-10 h-10 flex items-center justify-center"
                     >
                         <AiOutlineEdit />
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         className="border  border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white py-1 rounded flex w-10 h-10 items-center justify-center"
                     >
                         <AiOutlineFileSearch />
-                    </button>
+                    </button> */}
                     <button
                         type="button"
                         className="border border-red-500 text-red-500 hover:bg-red-500 hover:text-white py-1 rounded flex w-10 h-10 items-center justify-center"
@@ -144,7 +176,7 @@ const PDLtovisit = ({ setPersonForm, personForm, setVisitorForm, deletePdlToVisi
         lastname: string | null;
         firstName: string | null;
         middleName: string | null;
-        relationship: number | null;
+        relationship: string | null;
         level: string | null;
         annex: string | null;
         dorm: string | null;
@@ -233,6 +265,7 @@ const PDLtovisit = ({ setPersonForm, personForm, setVisitorForm, deletePdlToVisi
                 <div className="flex gap-1.5 font-semibold transition-all ease-in-out duration-200 justify-center items-center">
                     <button
                         type="button"
+                        onClick={() => handleEditRequirement(index)}
                         className="border border-blue-500 text-blue-500 hover:bg-blue-600 hover:text-white py-1 rounded w-10 h-10 flex items-center justify-center"
                     >
                         <AiOutlineEdit />
@@ -327,6 +360,7 @@ const PDLtovisit = ({ setPersonForm, personForm, setVisitorForm, deletePdlToVisi
                 <div className="flex gap-1.5 font-semibold transition-all ease-in-out duration-200 justify-center items-center">
                     <button
                         type="button"
+                        onClick={() => handleIdRequirement(index)}
                         className="border border-blue-500 text-blue-500 hover:bg-blue-600 hover:text-white py-1 rounded w-10 h-10 flex items-center justify-center"
                     >
                         <AiOutlineEdit />
@@ -405,6 +439,8 @@ const PDLtovisit = ({ setPersonForm, personForm, setVisitorForm, deletePdlToVisi
                 width="70%"
             >
                 <PDLToVisitForm
+                    visitorForm={visitorForm}
+                    editPdlToVisitIndex={editPdlToVisitIndex}
                     handlePdlToVisitModalCancel={handlePdlToVisitModalCancel}
                     pdlToVisitTableInfo={pdlToVisitTableInfo || []}
                     setPdlToVisitTableInfo={setPdlToVisitTableInfo}
@@ -425,6 +461,8 @@ const PDLtovisit = ({ setPersonForm, personForm, setVisitorForm, deletePdlToVisi
                 width="50%"
             >
                 <RequirementsForm
+                    editRequirement={personForm?.media_requirement_data?.[requirementIndexToEdit ?? -1] ?? null}
+                    requirementIndexToEdit={requirementIndexToEdit}
                     handleRequirementsModalCancel={handleRequirementsModalCancel}
                     setPersonForm={setPersonForm}
                 />
@@ -440,6 +478,8 @@ const PDLtovisit = ({ setPersonForm, personForm, setVisitorForm, deletePdlToVisi
                 width="50%"
             >
                 <IdForm
+                    editRequirement={personForm?.media_identifier_data?.[idIndexToEdit ?? -1] ?? null}
+                    idIndexToEdit={idIndexToEdit}
                     setPersonForm={setPersonForm}
                     idTypes={idTypes || []}
                     handleIdsModalCancel={handleIdsModalCancel}

@@ -5,8 +5,8 @@
 // const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // const BASE_URL_BIOMETRIC = import.meta.env.VITE_API_BASE_URL_BIOMETRIC;
 
-export const BASE_URL_BIOMETRIC: string = "http://192.168.50.59:8001";
-export const BASE_URL: string = "http://192.168.50.59:8002";
+export const BASE_URL_BIOMETRIC: string = "http://192.168.50.204:8004";
+export const BASE_URL: string = "http://192.168.50.204:8002";
 
 export const PDL = {
   getPDL: `${BASE_URL}/api/pdls/pdl/`,
@@ -178,7 +178,7 @@ export const SOCIAL_MEDIA_PLATFORMS = {
   putSOCIALMEDIAPLATFORMS: `${BASE_URL}/api/codes/social-media-platforms/{id}/`,
   patchSOCIALMEDIAPLATFORMS: `${BASE_URL}/api/codes/social-media-platforms/{id}/`,
   deleteSOCIALMEDIAPLATFORMS: `${BASE_URL}/api/codes/social-media-platforms/{id}/`,
-}
+};
 
 export const RECORD_STATUS = {
   getRECORD_STATUS: `${BASE_URL}/api/codes/record-statuses/`,
@@ -186,7 +186,7 @@ export const RECORD_STATUS = {
   putRECORD_STATUS: `${BASE_URL}/api/codes/record-statuses/{id}/`,
   patchRECORD_STATUS: `${BASE_URL}/api/codes/record-statuses/{id}/`,
   deleteRECORD_STATUS: `${BASE_URL}/api/codes/record-statuses/{id}/`,
-}
+};
 
 export const DETENTION_BUILDING = {
   getDETENTION_BUILDING: `${BASE_URL}/api/jail/detention-buildings/`,
@@ -202,7 +202,7 @@ export const DETENTION_FLOOR = {
   putDETENTION_FLOOR: `${BASE_URL}/api/jail/detention-floors/{id}/`,
   patchDETENTION_FLOOR: `${BASE_URL}/api/jail/detention-floors/{id}/`,
   deleteDETENTION_FLOOR: `${BASE_URL}/api/jail/detention-floors/{id}/`,
-}
+};
 
 export const DETENTION_CELL = {
   getDETENTION_CELL: `${BASE_URL}/api/jail/detention-cells/`,
@@ -210,7 +210,7 @@ export const DETENTION_CELL = {
   putDETENTION_CELL: `${BASE_URL}/api/jail/detention-cells/{id}/`,
   patchDETENTION_CELL: `${BASE_URL}/api/jail/detention-cells/{id}/`,
   deleteDETENTION_CELL: `${BASE_URL}/api/jail/detention-cells/{id}/`,
-}
+};
 
 export const MEDIA = {
   getMEDIA: `${BASE_URL}/api/standards/media/`,
@@ -218,7 +218,7 @@ export const MEDIA = {
   putMEDIA: `${BASE_URL}/api/standards/media/{id}/`,
   patchMEDIA: `${BASE_URL}/api/standards/media/{id}/`,
   deleteMEDIA: `${BASE_URL}/api/standards/media/{id}/`,
-}
+};
 
 export const JAIL_REGION = {
   getJAILREGION: `${BASE_URL}/api/jail/jail-regions/`,
@@ -226,7 +226,7 @@ export const JAIL_REGION = {
   putJAILREGION: `${BASE_URL}/api/jail/jail-regions/{id}/`,
   patchJAILREGION: `${BASE_URL}/api/jail/jail-regions/{id}/`,
   deleteJAILREGION: `${BASE_URL}/api/jail/jail-regions/{id}/`,
-}
+};
 
 export const JAIL_PROVINCE = {
   getJAIL_PROVINCE: `${BASE_URL}/api/jail/jail-provinces/`,
@@ -234,7 +234,7 @@ export const JAIL_PROVINCE = {
   putJAIL_PROVINCE: `${BASE_URL}/api/jail/jail-provinces/{id}/`,
   patchJAIL_PROVINCE: `${BASE_URL}/api/jail/jail-provinces/{id}/`,
   deleteJAIL_PROVINCE: `${BASE_URL}/api/jail/jail-provinces/{id}/`,
-}
+};
 
 export const JAIL_MUNICIPALITY = {
   getJAIL_MUNICIPALITY: `${BASE_URL}/api/jail/jail-municipalities/`,
@@ -242,7 +242,7 @@ export const JAIL_MUNICIPALITY = {
   putJAIL_MUNICIPALITY: `${BASE_URL}/api/jail/jail-municipalities/{id}/`,
   patchJAIL_MUNICIPALITY: `${BASE_URL}/api/jail/jail-municipalities/{id}/`,
   deleteJAIL_MUNICIPALITY: `${BASE_URL}/api/jail/jail-municipalities/{id}/`,
-}
+};
 
 export const JAIL_MEDIA = {
   getJAIL_MEDIA: `${BASE_URL}/api/jail/jail-media/`,
@@ -250,7 +250,7 @@ export const JAIL_MEDIA = {
   putJAIL_MEDIA: `${BASE_URL}/api/jail/jail-media/{id}/`,
   patchJAIL_MEDIA: `${BASE_URL}/api/jail/jail-media/{id}/`,
   deleteJAIL_MEDIA: `${BASE_URL}/api/jail/jail-media/{id}/`,
-}
+};
 
 export const JAIL_BARANGAY = {
   getJAIL_BARANGAY: `${BASE_URL}/api/jail/jail-barangays/`,
@@ -258,7 +258,7 @@ export const JAIL_BARANGAY = {
   putJAIL_BARANGAY: `${BASE_URL}/api/jail/jail-barangays/{id}/`,
   patchJAIL_BARANGAY: `${BASE_URL}/api/jail/jail-barangays/{id}/`,
   deleteJAIL_BARANGAY: `${BASE_URL}/api/jail/jail-barangays/{id}/`,
-}
+};
 
 export const VISITOR_TYPE = {
   getVISITOR_TYPE: `${BASE_URL}/api/codes/visitor-types/`,
@@ -266,7 +266,7 @@ export const VISITOR_TYPE = {
   putVISITOR_TYPE: `${BASE_URL}/api/codes/visitor-types/{id}/`,
   patchVISITOR_TYPE: `${BASE_URL}/api/codes/visitor-types/{id}/`,
   deleteVISITOR_TYPE: `${BASE_URL}/api/codes/visitor-types/{id}/`,
-}
+};
 
 export const VISITOR_TO_PDL_RELATIONSHIP = {
   getVISITOR_TO_PDL_RELATIONSHIP: `${BASE_URL}/api/codes/visitor-to-pdl-relationships/`,
@@ -274,7 +274,7 @@ export const VISITOR_TO_PDL_RELATIONSHIP = {
   putVISITOR_TO_PDL_RELATIONSHIP: `${BASE_URL}/api/codes/visitor-to-pdl-relationships/{id}/`,
   patchVISITOR_TO_PDL_RELATIONSHIP: `${BASE_URL}/api/codes/visitor-to-pdl-relationships/{id}/`,
   deleteVISITOR_TO_PDL_RELATIONSHIP: `${BASE_URL}/api/codes/visitor-to-pdl-relationships/{id}/`,
-}
+};
 
 export const VISITOR_REQ_DOCS = {
   getVISITOR_REQ_DOCS: `${BASE_URL}/api/codes/visitor-req-docs/`,
@@ -282,7 +282,7 @@ export const VISITOR_REQ_DOCS = {
   putVISITOR_REQ_DOCS: `${BASE_URL}/api/codes/visitor-req-docs/{id}/`,
   patchVISITOR_REQ_DOCS: `${BASE_URL}/api/codes/visitor-req-docs/{id}/`,
   deleteVISITOR_REQ_DOCS: `${BASE_URL}/api/codes/visitor-req-docs/{id}/`,
-}
+};
 
 export const RANK = {
   getRANK: `${BASE_URL}/api/codes/ranks/`,
@@ -290,39 +290,39 @@ export const RANK = {
   putRANK: `${BASE_URL}/api/codes/ranks/{id}/`,
   patchRANK: `${BASE_URL}/api/codes/ranks/{id}/`,
   deleteRANK: `${BASE_URL}/api/codes/ranks/{id}/`,
-}
+};
 
-export const POSITION ={
+export const POSITION = {
   getPOSITION: `${BASE_URL}/api/codes/positions/`,
   postPOSITION: `${BASE_URL}/api/codes/positions/`,
   putPOSITION: `${BASE_URL}/api/codes/positions/{id}/`,
   patchPOSITION: `${BASE_URL}/api/codes/positions/{id}/`,
   deletePOSITION: `${BASE_URL}/api/codes/positions/{id}/`,
-}
+};
 
-export const ORGANIZATION ={
+export const ORGANIZATION = {
   getORGANIZATION: `${BASE_URL}/api/codes/organizations/`,
   postORGANIZATION: `${BASE_URL}/api/codes/organizations/`,
   putORGANIZATION: `${BASE_URL}/api/codes/organizations/{id}/`,
   patchORGANIZATION: `${BASE_URL}/api/codes/organizations/{id}/`,
   deleteORGANIZATION: `${BASE_URL}/api/codes/organizations/{id}/`,
-}
+};
 
-export const ORGANIZATIONAL_TYPE ={
+export const ORGANIZATIONAL_TYPE = {
   getORGANIZATIONAL_TYPE: `${BASE_URL}/api/codes/organizational-types/`,
   postORGANIZATIONAL_TYPE: `${BASE_URL}/api/codes/organizational-types/`,
   putORGANIZATIONAL_TYPE: `${BASE_URL}/api/codes/organizational-types/{id}/`,
   patchORGANIZATIONAL_TYPE: `${BASE_URL}/api/codes/organizational-types/{id}/`,
   deleteORGANIZATIONAL_TYPE: `${BASE_URL}/api/codes/organizational-types/{id}/`,
-}
+};
 
-export const ORGANIZATIONAL_LEVEL ={
+export const ORGANIZATIONAL_LEVEL = {
   getORGANIZATIONAL_LEVEL: `${BASE_URL}/api/codes/organizational-levels/`,
   postORGANIZATIONAL_LEVEL: `${BASE_URL}/api/codes/organizational-levels/`,
   putORGANIZATIONAL_LEVEL: `${BASE_URL}/api/codes/organizational-levels/{id}/`,
   patchORGANIZATIONAL_LEVEL: `${BASE_URL}/api/codes/organizational-levels/{id}/`,
   deleteORGANIZATIONAL_LEVEL: `${BASE_URL}/api/codes/organizational-levels/{id}/`,
-}
+};
 
 export const JAIL_TYPE = {
   getJAIL_TYPE: `${BASE_URL}/api/jail/jail-types/`,
@@ -330,7 +330,7 @@ export const JAIL_TYPE = {
   putJAIL_TYPE: `${BASE_URL}/api/jail/jail-types/{id}/`,
   patchJAIL_TYPE: `${BASE_URL}/api/jail/jail-types/{id}/`,
   deleteJAIL_TYPE: `${BASE_URL}/api/jail/jail-types/{id}/`,
-}
+};
 
 export const JAIL_SECURITY_LEVEL = {
   getJAIL_SECURITY_LEVEL: `${BASE_URL}/api/jail/jail-security-levels/`,
@@ -338,7 +338,7 @@ export const JAIL_SECURITY_LEVEL = {
   putJAIL_SECURITY_LEVEL: `${BASE_URL}/api/jail/jail-security-levels/{id}/`,
   patchJAIL_SECURITY_LEVEL: `${BASE_URL}/api/jail/jail-security-levels/{id}/`,
   deleteJAIL_SECURITY_LEVEL: `${BASE_URL}/api/jail/jail-security-levels/{id}/`,
-}
+};
 
 export const JAIL_CATEGORY = {
   getJAIL_CATEGORY: `${BASE_URL}/api/jail/jail-categories/`,
@@ -346,7 +346,7 @@ export const JAIL_CATEGORY = {
   putJAIL_CATEGORY: `${BASE_URL}/api/jail/jail-categories/{id}/`,
   patchJAIL_CATEGORY: `${BASE_URL}/api/jail/jail-categories/{id}/`,
   deleteJAIL_CATEGORY: `${BASE_URL}/api/jail/jail-categories/{id}/`,
-}
+};
 
 export const ID_TYPE = {
   getID_TYPE: `${BASE_URL}/api/codes/id-types/`,
@@ -354,7 +354,7 @@ export const ID_TYPE = {
   putID_TYPE: `${BASE_URL}/api/codes/id-types/{id}/`,
   patchID_TYPE: `${BASE_URL}/api/codes/id-types/{id}/`,
   deleteID_TYPE: `${BASE_URL}/api/codes/id-types/{id}/`,
-}
+};
 
 export const SYSTEM_SETTING = {
   getSYSTEM_SETTING: `${BASE_URL}/api/codes/system-settings/`,
@@ -362,7 +362,7 @@ export const SYSTEM_SETTING = {
   putSYSTEM_SETTING: `${BASE_URL}/api/codes/system-settings/{id}/`,
   patchSYSTEM_SETTING: `${BASE_URL}/api/codes/system-settings/{id}/`,
   deleteSYSTEM_SETTING: `${BASE_URL}/api/codes/system-settings/{id}/`,
-}
+};
 
 export const GROUP_ROLE = {
   getGROUP_ROLE: `${BASE_URL}/api/standards/groups/`,
@@ -370,7 +370,7 @@ export const GROUP_ROLE = {
   putGROUP_ROLE: `${BASE_URL}/api/standards/groups/{id}/`,
   patchGROUP_ROLE: `${BASE_URL}/api/standards/groups/{id}/`,
   deleteGROUP_ROLE: `${BASE_URL}/api/standards/groups/{id}/`,
-}
+};
 
 export const GROUP_ROLE_PERMISSION = {
   getGROUP_ROLE_PERMISSION: `${BASE_URL}/api/standards/permissions/`,
@@ -378,7 +378,7 @@ export const GROUP_ROLE_PERMISSION = {
   putGROUP_ROLE_PERMISSION: `${BASE_URL}/api/standards/permissions/{id}/`,
   patchGROUP_ROLE_PERMISSION: `${BASE_URL}/api/standards/permissions/{id}/`,
   deleteGROUP_ROLE_PERMISSION: `${BASE_URL}/api/standards/permissions/{id}/`,
-}
+};
 
 export const PDL_TO_VISIT = {
   getPDL_TO_VISIT: `${BASE_URL}/api/codes/pdl-to-visit/`,
@@ -386,7 +386,7 @@ export const PDL_TO_VISIT = {
   putPDL_TO_VISIT: `${BASE_URL}/api/codes/pdl-to-visit/{id}/`,
   patchPDL_TO_VISIT: `${BASE_URL}/api/codes/pdl-to-visit/{id}/`,
   deletePDL_TO_VISIT: `${BASE_URL}/api/codes/pdl-to-visit/{id}/`,
-}
+};
 
 export const EMPLOYMENT_TYPE = {
   getEMPLOYMENT_TYPE: `${BASE_URL}/api/codes/employment-types/`,
@@ -394,7 +394,7 @@ export const EMPLOYMENT_TYPE = {
   putEMPLOYMENT_TYPE: `${BASE_URL}/api/codes/employment-types/{id}/`,
   patchEMPLOYMENT_TYPE: `${BASE_URL}/api/codes/employment-types/{id}/`,
   deleteEMPLOYMENT_TYPE: `${BASE_URL}/api/codes/employment-types/{id}/`,
-}
+};
 
 export const DEVICE_TYPE = {
   getDEVICE_TYPE: `${BASE_URL}/api/codes/device-types/`,
@@ -402,7 +402,7 @@ export const DEVICE_TYPE = {
   putDEVICE_TYPE: `${BASE_URL}/api/codes/device-types/{id}/`,
   patchDEVICE_TYPE: `${BASE_URL}/api/codes/device-types/{id}/`,
   deleteDEVICE_TYPE: `${BASE_URL}/api/codes/device-types/{id}/`,
-}
+};
 
 export const DEVICE_USAGE = {
   getDEVICE_USAGE: `${BASE_URL}/api/codes/device-usages/`,
@@ -410,7 +410,7 @@ export const DEVICE_USAGE = {
   putDEVICE_USAGE: `${BASE_URL}/api/codes/device-usages/{id}/`,
   patchDEVICE_USAGE: `${BASE_URL}/api/codes/device-usages/{id}/`,
   deleteDEVICE_USAGE: `${BASE_URL}/api/codes/device-usages/{id}/`,
-}
+};
 
 export const DEVICE = {
   getDEVICE: `${BASE_URL}/api/codes/devices/`,
@@ -418,7 +418,7 @@ export const DEVICE = {
   putDEVICE: `${BASE_URL}/api/codes/devices/{id}/`,
   patchDEVICE: `${BASE_URL}/api/codes/devices/{id}/`,
   deleteDEVICE: `${BASE_URL}/api/codes/devices/{id}/`,
-}
+};
 
 export const SUMMARYCARD = {
   getSUMMARYCARD: `${BASE_URL}/api/dashboard/summary-dashboard/`,
@@ -426,7 +426,7 @@ export const SUMMARYCARD = {
   getDAILY_PERSON_COUNT: `${BASE_URL}/api/dashboard/summary-dashboard/get-daily-person-count`,
   getMONTHLY_LOGS: `${BASE_URL}/api/dashboard/summary-dashboard/get-monthly-logs`,
   getMONTLY_PERSON_COUNT: `${BASE_URL}/api/dashboard/summary-dashboard/get-monthly-person-count`,
-}
+};
 
 export const ISSUES = {
   getISSUES: `${BASE_URL}/api/issues/issues/`,
@@ -434,7 +434,7 @@ export const ISSUES = {
   putISSUES: `${BASE_URL}/api/issues/issues/{id}/`,
   patchISSUES: `${BASE_URL}/api/issues/issues/{id}/`,
   deleteISSUES: `${BASE_URL}/api/issues/issues/{id}/`,
-}
+};
 
 export const SKILLS = {
   getSKILLS: `${BASE_URL}/api/standards/skills/`,
@@ -443,7 +443,7 @@ export const SKILLS = {
   patchSKILLS: `${BASE_URL}/api/standards/skills/{id}/`,
   deleteSKILLS: `${BASE_URL}/api/standards/skills/{id}/`,
   putSKILLS: `${BASE_URL}/api/standards/skills/{id}/`,
-}
+};
 
 export const TALENTS = {
   getTALENTS: `${BASE_URL}/api/standards/talents/`,
@@ -452,7 +452,7 @@ export const TALENTS = {
   patchTALENTS: `${BASE_URL}/api/standards/talents/{id}/`,
   deleteTALENTS: `${BASE_URL}/api/standards/talents/{id}/`,
   putTALENTS: `${BASE_URL}/api/standards/talents/{id}/`,
-}
+};
 
 export const RELIGION = {
   getRELIGION: `${BASE_URL}/api/standards/religions/`,
@@ -461,7 +461,7 @@ export const RELIGION = {
   patchRELIGION: `${BASE_URL}/api/standards/religions/{id}/`,
   deleteRELIGION: `${BASE_URL}/api/standards/religions/{id}/`,
   putRELIGION: `${BASE_URL}/api/standards/religions/{id}/`,
-}
+};
 
 export const INTEREST = {
   getINTEREST: `${BASE_URL}/api/standards/interests/`,
@@ -469,7 +469,7 @@ export const INTEREST = {
   patchINTEREST: `${BASE_URL}/api/standards/interests/{id}/`,
   deleteINTEREST: `${BASE_URL}/api/standards/interests/{id}/`,
   putINTEREST: `${BASE_URL}/api/standards/interests/{id}/`,
-}
+};
 
 export const ETHNICITY = {
   getETHNICITY: `${BASE_URL}/api/codes/ethnicities/`,
@@ -477,7 +477,7 @@ export const ETHNICITY = {
   patchETHNICITY: `${BASE_URL}/api/codes/ethnicities/{id}/`,
   deleteETHNICITY: `${BASE_URL}/api/codes/ethnicities/{id}/`,
   putETHNICITY: `${BASE_URL}/api/codes/ethnicities/{id}/`,
-}
+};
 
 export const ETHNICITYPROVINCE = {
   getETHNICITYPROVINCE: `${BASE_URL}/api/codes/ethnicity-provinces/`,
@@ -485,7 +485,7 @@ export const ETHNICITYPROVINCE = {
   patchETHNICITYPROVINCE: `${BASE_URL}/api/codes/ethnicity-provinces/{id}/`,
   deleteETHNICITYPROVINCE: `${BASE_URL}/api/codes/ethnicity-provinces/{id}/`,
   putETHNICITYPROVINCE: `${BASE_URL}/api/codes/ethnicity-provinces/{id}/`,
-}
+};
 
 export const LOOK = {
   getLOOK: `${BASE_URL}/api/pdls/looks/`,
@@ -493,7 +493,7 @@ export const LOOK = {
   patchLOOK: `${BASE_URL}/api/pdls/looks/{id}/`,
   deleteLOOK: `${BASE_URL}/api/pdls/looks/{id}/`,
   putLOOK: `${BASE_URL}/api/pdls/looks/{id}/`,
-}
+};
 
 export const SERVICEPROVIDER = {
   getSERVICEPROVIDER: `${BASE_URL}/api/service-providers/service-providers/`,
@@ -501,7 +501,7 @@ export const SERVICEPROVIDER = {
   patchSERVICEPROVIDER: `${BASE_URL}/api/service-providers/service-providers/{id}/`,
   deleteSERVICEPROVIDER: `${BASE_URL}/api/service-providers/service-providers/{id}/`,
   putSERVICEPROVIDER: `${BASE_URL}/api/service-providers/service-providers/{id}/`,
-}
+};
 
 export const COURT = {
   getCOURT: `${BASE_URL}/api/standards/court/`,
@@ -509,7 +509,7 @@ export const COURT = {
   patchCOURT: `${BASE_URL}/api/standards/court/{id}/`,
   deleteCOURT: `${BASE_URL}/api/standards/court/{id}/`,
   putCOURT: `${BASE_URL}/api/standards/court/{id}/`,
-}
+};
 
 export const BRANCH = {
   getBRANCH: `${BASE_URL}/api/standards/court-branch/`,
@@ -517,4 +517,4 @@ export const BRANCH = {
   patchBRANCH: `${BASE_URL}/api/standards/court-branch/{id}/`,
   deleteBRANCH: `${BASE_URL}/api/standards/court-branch/{id}/`,
   putBRANCH: `${BASE_URL}/api/standards/court-branch/{id}/`,
-}
+};

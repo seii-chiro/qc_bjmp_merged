@@ -1,16 +1,17 @@
 import { Prefix, Suffix, VisitortoPDLRelationship } from "@/lib/definitions";
 import { Person } from "@/lib/pdl-definitions";
-import { FamilyRelativesContactsForm, PDLForm } from "@/lib/visitorFormDefinition";
+import { FamilyRelativesContactsForm } from "@/lib/visitorFormDefinition";
 import { Input, message, Select } from "antd"
 import { SetStateAction, useEffect, useState } from "react";
+import { HasPersonRelationships } from "./FMC";
 
-type Props = {
+type Props<T extends HasPersonRelationships> = {
     handleModalClose: () => void;
     editIndex: number | null;
     prefixes: Prefix[] | null;
     suffixes: Suffix[] | null;
-    setPdlForm: React.Dispatch<SetStateAction<PDLForm>>;
-    pdlForm: PDLForm;
+    setPdlForm: React.Dispatch<SetStateAction<T>>;
+    pdlForm: T;
     persons: Person[] | null;
     personsLoading: boolean;
     relationships: VisitortoPDLRelationship[] | null;
@@ -18,7 +19,7 @@ type Props = {
     setEditIndex: React.Dispatch<SetStateAction<number | null>>;
 };
 
-const FMCForm = ({
+const FMCForm = <T extends HasPersonRelationships>({
     editIndex,
     handleModalClose,
     pdlForm,
@@ -30,7 +31,7 @@ const FMCForm = ({
     prefixes,
     suffixes,
     setEditIndex,
-}: Props) => {
+}: Props<T>) => {
     const [form, setForm] = useState<FamilyRelativesContactsForm>({
         address: "",
         contact_person: true,
@@ -57,7 +58,7 @@ const FMCForm = ({
                 mobile_number: selectedPerson?.contacts?.find(type => type?.type === "Phone")?.value ?? "N/A",
                 // Assuming prefix and suffix are strings in the object
                 prefix: prefixes?.find(prefix => prefix?.id === selectedPerson?.prefix)?.prefix ?? "N/A",
-                suffix: suffixes?.find(suffix => suffix?.id === selectedPerson?.prefix)?.suffix ?? "N/A"
+                suffix: suffixes?.find(suffix => suffix?.id === selectedPerson?.suffix)?.suffix ?? "N/A"
             }));
         }
     };

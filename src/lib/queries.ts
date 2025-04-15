@@ -62,7 +62,6 @@ import {
   Jail,
   CivilStatus,
   Nationality,
-  Person,
   RecordStatus,
   SocialMediaPlatforms,
   DetentionBuildings,
@@ -120,7 +119,6 @@ import {
   CourtRecord,
   CourtDetails,
   Occupation,
-  Contact,
   ContactType,
   AddressData,
   BirthRecord,
@@ -132,8 +130,9 @@ import {
   Law,
   GangAffiliation,
   PersonnelAppStatus,
+  Offense,
 } from "./definitions";
-import { Religion } from "./pdl-definitions";
+import { Religion, Person as NewPerson } from "./pdl-definitions";
 import { EducationalAttainment } from "./visitorFormDefinition";
 
 export async function getVisitors(token: string): Promise<Visitors[]> {
@@ -166,7 +165,7 @@ export async function getPDLs(token: string): Promise<PDLs[]> {
   return res.json();
 }
 
-export async function getPerson(token: string): Promise<Person[]> {
+export async function getPerson(token: string): Promise<NewPerson[]> {
   const res = await fetch(PERSON.getPERSON, {
     headers: {
       "Content-Type": "application/json",
@@ -2522,7 +2521,7 @@ export async function getMultipleBirthSibling(
   return res.json();
 }
 
-export async function getRealPerson(token: string): Promise<VisitorSpecific[]> {
+export async function getRealPerson(token: string): Promise<NewPerson[]> {
   const res = await fetch(PERSON.getPERSON, {
     headers: {
       "Content-Type": "application/json",

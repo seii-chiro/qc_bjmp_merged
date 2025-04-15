@@ -35,6 +35,7 @@ const CaseDetailsForm = ({
     editIndex
 }: Props) => {
     const [casesForm, setCasesForm] = useState<CasesDetailsForm>({
+        case_number: "",
         assignment_date: null,
         bail_recommended: "",
         court_branch_id: null,
@@ -120,6 +121,7 @@ const CaseDetailsForm = ({
         });
 
         setCasesForm({
+            case_number: "",
             assignment_date: "",
             bail_recommended: "",
             court_branch_id: null,
@@ -141,6 +143,7 @@ const CaseDetailsForm = ({
 
     const handleCancel = () => {
         setCasesForm({
+            case_number: "",
             assignment_date: "",
             bail_recommended: "",
             court_branch_id: null,
@@ -168,7 +171,7 @@ const CaseDetailsForm = ({
                     <label className="flex flex-col flex-1">
                         <span className="font-semibold">Case Number</span>
                         <Input
-                            readOnly
+                            onChange={e => setCasesForm(prev => ({ ...prev, case_number: e.target.value }))}
                             className="h-12"
                         />
                     </label>
