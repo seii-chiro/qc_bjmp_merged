@@ -572,8 +572,8 @@ const PdlRegistration = () => {
     const addPdlMutation = useMutation({
         mutationKey: ['add-visitor'],
         mutationFn: (id: number) => registerPdl({ ...pdlForm, person_id: id }, token ?? ""),
-        onSuccess: () => message.success('Successfully registered visitor'),
-        onError: () => message.error("Failed to register visitor")
+        onSuccess: () => message.success('Successfully registered PDL'),
+        onError: () => message.error("Failed to register PDL")
     })
 
 

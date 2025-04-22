@@ -78,11 +78,11 @@ const FMC = <T extends HasPersonRelationships>({
 
         return ({
             key: index,
-            relationship: relationships?.find(relationship => relationship?.id === item?.relationship)?.relationship_name,
+            relationship: relationships?.find(relationship => relationship?.id === item?.relationship_id)?.relationship_name,
             lastName: specificPerson?.last_name,
             firsName: specificPerson?.first_name,
             middleName: specificPerson?.middle_name,
-            address: `${specificPerson?.addresses[0]?.street} ${specificPerson?.addresses[0]?.barangay} ${specificPerson?.addresses[0]?.city_municipality} ${specificPerson?.addresses[0]?.province}`,
+            address: `${specificPerson?.addresses[0]?.street ?? ""} ${specificPerson?.addresses[0]?.barangay ?? ""} ${specificPerson?.addresses[0]?.city_municipality ?? ""} ${specificPerson?.addresses[0]?.province ?? ""}`,
             mobileNumber: specificPerson?.contacts[0]?.value,
             contactPerson: item?.contact_person ? "Yes" : "No",
             remarks: item?.remarks,

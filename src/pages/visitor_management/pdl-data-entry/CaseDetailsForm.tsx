@@ -42,7 +42,7 @@ const CaseDetailsForm = ({
         date_arrested: null,
         date_crime_committed: null,
         judge: "",
-        offense: null,
+        offense_id: null,
         remarks: "",
         days_in_detention: null,
         court_name: "",
@@ -61,8 +61,8 @@ const CaseDetailsForm = ({
     }, [casesForm?.court_branch_id, courtBranches])
 
     useEffect(() => {
-        if (casesForm?.offense && offenses && crimeCategories, laws) {
-            const matchedOffense = offenses?.find(offense => offense.id === casesForm.offense);
+        if (casesForm?.offense_id && offenses && crimeCategories, laws) {
+            const matchedOffense = offenses?.find(offense => offense.id === casesForm.offense_id);
             const matchedCategory = crimeCategories?.find(
                 category => category.crime_category_name === matchedOffense?.crime_category
             );
@@ -80,7 +80,7 @@ const CaseDetailsForm = ({
                 }));
             }
         }
-    }, [casesForm?.offense, offenses, crimeCategories, laws]);
+    }, [casesForm?.offense_id, offenses, crimeCategories, laws]);
 
     useEffect(() => {
         if (casesForm?.date_arrested) {
@@ -128,7 +128,7 @@ const CaseDetailsForm = ({
             date_arrested: "",
             date_crime_committed: "",
             judge: "",
-            offense: null,
+            offense_id: null,
             remarks: "",
             days_in_detention: null,
             court_name: "",
@@ -150,7 +150,7 @@ const CaseDetailsForm = ({
             date_arrested: "",
             date_crime_committed: "",
             judge: "",
-            offense: null,
+            offense_id: null,
             remarks: "",
             days_in_detention: null,
             court_name: "",
@@ -178,7 +178,7 @@ const CaseDetailsForm = ({
                     <label className="flex flex-col flex-1">
                         <span className="font-semibold">Offense</span>
                         <Select
-                            value={casesForm?.offense}
+                            value={casesForm?.offense_id}
                             loading={offensesLoading}
                             className="h-12"
                             options={offenses?.map(offense => ({
@@ -188,7 +188,7 @@ const CaseDetailsForm = ({
                             onChange={value => {
                                 setCasesForm(prev => ({
                                     ...prev,
-                                    offense: value
+                                    offense_id: value
                                 }))
                             }}
                         />

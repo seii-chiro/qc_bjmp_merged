@@ -5,7 +5,7 @@
 // const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // const BASE_URL_BIOMETRIC = import.meta.env.VITE_API_BASE_URL_BIOMETRIC;
 
-export const BASE_URL_BIOMETRIC: string = "http://192.168.50.204:8004";
+export const BASE_URL_BIOMETRIC: string = "http://192.168.50.204:8006";
 export const BASE_URL: string = "http://192.168.50.204:8002";
 
 export const PDL = {

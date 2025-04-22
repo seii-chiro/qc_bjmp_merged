@@ -40,7 +40,7 @@ const FMCForm = <T extends HasPersonRelationships>({
         middle_name: "",
         mobile_number: "",
         person_id: null,
-        relationship: null,
+        relationship_id: null,
         remarks: "",
         prefix: "",
         suffix: "",
@@ -69,7 +69,7 @@ const FMCForm = <T extends HasPersonRelationships>({
             return;
         }
 
-        if (!form?.relationship) {
+        if (!form?.relationship_id) {
             message.warning("Please select a relationship.");
             return;
         }
@@ -97,7 +97,7 @@ const FMCForm = <T extends HasPersonRelationships>({
             middle_name: "",
             mobile_number: "",
             person_id: null,
-            relationship: null,
+            relationship_id: null,
             remarks: "",
             prefix: "",
             suffix: "",
@@ -117,7 +117,7 @@ const FMCForm = <T extends HasPersonRelationships>({
             middle_name: "",
             mobile_number: "",
             person_id: null,
-            relationship: null,
+            relationship_id: null,
             remarks: "",
             prefix: "",
             suffix: "",
@@ -149,7 +149,7 @@ const FMCForm = <T extends HasPersonRelationships>({
                                     value: relationship?.id,
                                     label: relationship?.relationship_name,
                                 }))}
-                                onChange={(val) => setForm(prev => ({ ...prev, relationship: val }))}
+                                onChange={(val) => setForm(prev => ({ ...prev, relationship_id: val }))}
                             />
                         </label>
 

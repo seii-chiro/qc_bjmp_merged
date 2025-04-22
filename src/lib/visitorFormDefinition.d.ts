@@ -229,7 +229,7 @@ export type PDLForm = {
 
 export type CasesDetailsForm = {
   case_number: string | null;
-  offense: number | null;
+  offense_id: number | null;
   court_branch_id: number | null;
   court_name?: string;
   judge: string;
@@ -255,7 +255,7 @@ export type EducationalAttainment = {
 };
 
 export type FamilyRelativesContactsForm = {
-  relationship: number | null;
+  relationship_id: number | null;
   prefix: string;
   suffix: string;
   person_id: number | null;
