@@ -2359,3 +2359,44 @@ export type Relationship = {
   relationship_name: string;
   description: string;
 };
+
+export type ProvidedService = {
+  id: number;
+  created_by: string;
+  updated_by: string;
+  record_status: string;
+  created_at: string; // ISO date string
+  updated_at: string; // ISO date string
+  service_provided: string;
+  description: string;
+  priority_level: "Low" | "Medium" | "High";
+  service_frequency:
+    | "Daily"
+    | "Weekly"
+    | "Monthly"
+    | "Quarterly"
+    | "Annually"
+    | "As Needed";
+};
+
+export type ServiceProviderType = {
+  id: number;
+  created_by: string;
+  updated_by: string;
+  record_status: string;
+  created_at: string; // ISO date string
+  updated_at: string; // ISO date string
+  serv_prov_type: string;
+  description: string;
+};
+
+export type ServiceProviderRemarks = {
+  id: number;
+  created_by: string;
+  updated_by: string;
+  record_status: string;
+  created_at: string; // ISO date string
+  updated_at: string; // ISO date string
+  remarks: string;
+  service_provider: number;
+};

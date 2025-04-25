@@ -450,6 +450,10 @@ function App() {
                 {
                     path: "test",
                     element: <Test />
+                },
+                {
+                    path: "ld",
+                    element: <IdentificationLandscape />
                 }
             ],
         },

@@ -61,6 +61,12 @@ export type RemarksForm = {
   remarks: string;
 };
 
+export type ServiceProviderRemarksForm = {
+  timestamp: string;
+  created_by: string;
+  remarks: number | null;
+};
+
 export type RequirementForm = {
   name: string;
   issued_by: string;
@@ -186,6 +192,10 @@ type RemarksData = {
   remarks: string;
 };
 
+type ServiceProviderRemarksData = {
+  remarks: number | null;
+};
+
 export type VisitorPdl = {
   pdl_id: number;
   relationship_to_pdl_id: number;
@@ -307,13 +317,18 @@ export type NonPdlVisitorForm = {
 };
 
 export type ServiceProviderForm = {
+  record_status_id: number | null;
+  visitor_type_id: number | null;
+  affiliation_id: number | null;
+  service_type_id: number | null;
   sp_reg_no: string;
   id_number: string;
-  verified_at: string;
-  approved_at: string;
+  verified_at: string; // ISO date string
+  approved_at: string; // ISO date string
   person: number | null;
   visitor_status: number | null;
   verified_by: number | null;
   approved_by: number | null;
   remarks_data?: RemarksData[];
+  remark_ids: ServiceProviderRemarksData[];
 };

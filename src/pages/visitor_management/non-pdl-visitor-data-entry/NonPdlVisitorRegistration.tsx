@@ -765,7 +765,7 @@ const NonPdlVisitorRegistration = () => {
 
 
     // console.log(visitorForm)
-    console.log(nonPdlVisitorForm)
+    // console.log(nonPdlVisitorForm)
 
     return (
         <div className='bg-white rounded-md shadow border border-gray-200 py-5 px-7 w-full mb-5'>
@@ -780,6 +780,8 @@ const NonPdlVisitorRegistration = () => {
                                 <div className='flex gap-1 font-semibold'>Registration No.<span className='text-red-600'>*</span></div>
                                 <Input
                                     className='mt-2 h-10 rounded-md outline-gray-300'
+                                    readOnly
+                                    placeholder="YYYY-MM-DD-XXXXXX"
                                 />
                             </div>
                             <div className='flex flex-col mt-2 flex-1'>
