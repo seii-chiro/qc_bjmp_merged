@@ -58,7 +58,8 @@ const registerPdl = async (visitor: PDLForm, token: string) => {
 
     if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData);
+        // Throw the whole thing as a stringified object
+        throw new Error(JSON.stringify(errorData));
     }
 
     return res.json()
@@ -573,7 +574,7 @@ const PdlRegistration = () => {
         mutationKey: ['add-visitor'],
         mutationFn: (id: number) => registerPdl({ ...pdlForm, person_id: id }, token ?? ""),
         onSuccess: () => message.success('Successfully registered PDL'),
-        onError: () => message.error("Failed to register PDL")
+        onError: (err) => message.error(err.message)
     })
 
 
