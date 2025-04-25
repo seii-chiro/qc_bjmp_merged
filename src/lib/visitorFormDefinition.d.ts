@@ -23,7 +23,6 @@ export type PersonForm = {
   media_requirement_data?: RequirementForm[];
   religion_id?: number;
   media_data?: MediaForm[];
-  media_requirement_data?: [];
   multiple_birth_class?: number;
   multiple_birth_sibling_data?: MultiBirthSiblingForm[];
   ethnicity_province?: number;
@@ -72,6 +71,7 @@ export type RequirementForm = {
   remarks: string;
   status: "Under Review" | "Rejected" | "Approved" | "Pending";
   media_data: MediaForm;
+  direct_image: string;
 };
 
 export type IdentifierForm = {
@@ -85,6 +85,7 @@ export type IdentifierForm = {
   remarks: string;
   status: "Under Review" | "Rejected" | "Approved" | "Pending";
   media_data: MediaForm;
+  direct_image: string;
 };
 
 export type AddressForm = {
@@ -186,8 +187,8 @@ type RemarksData = {
 };
 
 export type VisitorPdl = {
-  pdl: number;
-  relationship_to_pdl: number;
+  pdl_id: number;
+  relationship_to_pdl_id: number;
 };
 
 export type PdlVisitor = {
@@ -274,7 +275,7 @@ export type PersonnelForm = {
   person_id: number | null;
   region_origin_id: number | null;
   rank_id: number | null;
-  status_id: number | null;
+  status_id?: number | null;
   personnel_app_status_id: number | null;
   position_id: number | null;
   remarks_data: RemarksData[];
@@ -288,8 +289,31 @@ export type PersonnelForm = {
   approved_by: number | null;
 };
 
-// export type ServiceProviderForm = {};
+export type NonPdlVisitorForm = {
+  person_id: number | null;
+  personnel_id: number | null;
+  non_pdl_visitor_type_id: number | null;
+  non_pdl_visitor_reason_id: number | null;
+  visitor_rel_personnel_id: number | null;
+  visitor_status_id?: number | null;
+  reg_no: string;
+  id_number: string;
+  reason_notes?: string;
+  verified_by?: string;
+  verified_at?: string;
+  approved_by?: string;
+  approved_at?: string;
+  remarks_data?: RemarksData[];
+};
 
-// export type PersonnelForm = {};
-
-// export type NonPdlVisitorForm = {};
+export type ServiceProviderForm = {
+  sp_reg_no: string;
+  id_number: string;
+  verified_at: string;
+  approved_at: string;
+  person: number | null;
+  visitor_status: number | null;
+  verified_by: number | null;
+  approved_by: number | null;
+  remarks_data?: RemarksData[];
+};

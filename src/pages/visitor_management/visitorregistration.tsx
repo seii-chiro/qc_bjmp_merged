@@ -131,7 +131,7 @@ const VisitorRegistration = () => {
         record_status_id: 1,
         verified_by: 0,
         approved_by: 0,
-        pdl: [],
+        pdl_data: [],
         remarks_data: [],
         id_number: null,
     })
@@ -313,7 +313,7 @@ const VisitorRegistration = () => {
     const deletePdlToVisit = (index: number) => {
         setVisitorForm(prev => ({
             ...prev,
-            pdl: prev?.pdl?.filter((_, i) => i !== index)
+            pdl: prev?.pdl_data?.filter((_, i) => i !== index)
         }));
     };
 
@@ -815,7 +815,7 @@ const VisitorRegistration = () => {
 
 
     // console.log(visitorForm)
-    // console.log("Person Form: ", personForm)
+    console.log("Person Form: ", personForm)
 
     return (
         <div className='bg-white rounded-md shadow border border-gray-200 py-5 px-7 w-full mb-5'>

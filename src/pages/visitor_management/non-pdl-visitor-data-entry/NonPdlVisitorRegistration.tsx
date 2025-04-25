@@ -8,11 +8,12 @@ import Issue from "../visitor-data-entry/Issue";
 import { useMutation, useQueries } from "@tanstack/react-query";
 import {
     getCivilStatus, getCountries, getCurrentUser, getGenders, getJail_Barangay,
-    getJail_Municipality, getJail_Province, getJailRegion, getMultipleBirthClassTypes, getNationalities,
-    getPrefixes, getRealPerson, getReligion, getSuffixes, getUsers, getVisitor_Type, getVisitorAppStatus
+    getJail_Municipality, getJail_Province, getJailRegion, getNationalities,
+    getPersonnel,
+    getPrefixes, getReligion, getSuffixes, getUsers, getVisitor_Type, getVisitorAppStatus
 } from "@/lib/queries";
 import { useTokenStore } from "@/store/useTokenStore";
-import { PersonForm, VisitorForm } from "@/lib/visitorFormDefinition";
+import { NonPdlVisitorForm, PersonForm } from "@/lib/visitorFormDefinition";
 import { calculateAge } from "@/functions/calculateAge";
 import { ColumnsType } from "antd/es/table";
 import ContactForm from "../visitor-data-entry/ContactForm";
@@ -20,6 +21,7 @@ import Remarks from "../visitor-data-entry/Remarks";
 import { BiometricRecordFace } from "@/lib/scanner-definitions";
 import { BASE_URL, BIOMETRIC, PERSON } from "@/lib/urls";
 import Identifiers from "../personnel-data-entry/Identifiers";
+import { getNonPdlVisitorReasons, getRelationships } from "@/lib/additionalQueries";
 
 const addPerson = async (payload: PersonForm, token: string) => {
 
@@ -40,8 +42,8 @@ const addPerson = async (payload: PersonForm, token: string) => {
     return res.json()
 }
 
-const registerVisitor = async (visitor: VisitorForm, token: string) => {
-    const res = await fetch(`${BASE_URL}/api/visitors/visitor/`, {
+const registerVisitor = async (visitor: NonPdlVisitorForm, token: string) => {
+    const res = await fetch(`${BASE_URL}/api/non-pdl-visitor/non-pdl-visitors/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -52,7 +54,7 @@ const registerVisitor = async (visitor: VisitorForm, token: string) => {
 
     if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.email[0] || 'Error registering visitor');
+        throw new Error(errorData.email[0] || 'Error registering non-pdl visitor');
     }
 
     return res.json()
@@ -85,7 +87,6 @@ const NonPdlVisitorRegistration = () => {
 
     const [editAddressIndex, setEditAddressIndex] = useState<number | null>(null);
     const [editContactIndex, setEditContactIndex] = useState<number | null>(null);
-    const [editPdlToVisitIndex, setEditPdlToVisitIndex] = useState<number | null>(null);
 
     const [personForm, setPersonForm] = useState<PersonForm>({
         first_name: "",
@@ -114,23 +115,16 @@ const NonPdlVisitorRegistration = () => {
         media_data: [],
         multiple_birth_sibling_data: [],
     })
-    const [visitorForm, setVisitorForm] = useState<VisitorForm>({
-        visitor_reg_no: 0,
-        shortname: "",
-        visitor_have_twins: false,
-        visitor_twin_name: "",
-        visited_pdl_have_twins: false,
-        visited_pdl_twin_name: "",
-        remarks: "",
-        visitor_app_status_id: null,
-        person_id: 0,
-        visitor_type_id: 0,
-        record_status_id: 1,
-        verified_by: 0,
-        approved_by: 0,
-        pdl: [],
-        remarks_data: [],
-        id_number: null,
+    const [nonPdlVisitorForm, setNonPdlVisitorForm] = useState<NonPdlVisitorForm>({
+        person_id: null,
+        id_number: "",
+        non_pdl_visitor_reason_id: null,
+        non_pdl_visitor_type_id: null,
+        personnel_id: null,
+        reason_notes: "",
+        reg_no: "",
+        visitor_rel_personnel_id: null,
+        remarks_data: []
     })
 
     const [icao, setIcao] = useState("")
@@ -300,36 +294,8 @@ const NonPdlVisitorRegistration = () => {
         }));
     };
 
-    const handleDeleteMultipleBirthSibling = (indexToDelete: number) => {
-        setPersonForm(prev => ({
-            ...prev,
-            multiple_birth_sibling_data: prev?.multiple_birth_sibling_data?.filter((_, i) => i !== indexToDelete),
-        }));
-    };
-
-    const deletePdlToVisit = (index: number) => {
-        setVisitorForm(prev => ({
-            ...prev,
-            pdl: prev?.pdl?.filter((_, i) => i !== index)
-        }));
-    };
-
-    const deleteMediaIdentifierByIndex = (index: number) => {
-        setPersonForm(prev => ({
-            ...prev,
-            media_identifier_data: prev?.media_identifier_data?.filter((_, i) => i !== index),
-        }));
-    };
-
-    const deleteMediaRequirementByIndex = (index: number) => {
-        setPersonForm(prev => ({
-            ...prev,
-            media_requirement_data: prev?.media_requirement_data?.filter((_, i) => i !== index),
-        }));
-    };
-
     const deleteRemarksByIndex = (index: number) => {
-        setVisitorForm(prev => ({
+        setNonPdlVisitorForm(prev => ({
             ...prev,
             remarks_data: prev?.remarks_data?.filter((_, i) => i !== index),
         }))
@@ -388,8 +354,8 @@ const NonPdlVisitorRegistration = () => {
                 staleTime: 10 * 60 * 1000
             },
             {
-                queryKey: ['persons'],
-                queryFn: () => getRealPerson(token ?? ""),
+                queryKey: ['personnel'],
+                queryFn: () => getPersonnel(token ?? ""),
                 staleTime: 10 * 60 * 1000
             },
             {
@@ -418,8 +384,13 @@ const NonPdlVisitorRegistration = () => {
                 staleTime: 10 * 60 * 1000
             },
             {
-                queryKey: ['multiple-birth-class-types'],
-                queryFn: () => getMultipleBirthClassTypes(token ?? ""),
+                queryKey: ['non-pdl-relationship'],
+                queryFn: () => getRelationships(token ?? ""),
+                staleTime: 10 * 60 * 1000
+            },
+            {
+                queryKey: ['non-pdl-reasons'],
+                queryFn: () => getNonPdlVisitorReasons(token ?? ""),
                 staleTime: 10 * 60 * 1000
             },
         ]
@@ -516,20 +487,20 @@ const NonPdlVisitorRegistration = () => {
         onError: () => message.error("Failed to Enroll Right Thumb Finger")
     })
 
-    const addVisitorMutation = useMutation({
+    const addNonPdlVisitorMutation = useMutation({
         mutationKey: ['add-visitor'],
-        mutationFn: (id: number) => registerVisitor({ ...visitorForm, person_id: id }, token ?? ""),
+        mutationFn: (id: number) => registerVisitor({ ...nonPdlVisitorForm, person_id: id }, token ?? ""),
         onSuccess: () => message.success('Successfully registered visitor'),
         onError: () => message.error("Failed to register visitor")
     })
 
 
     const addPersonMutation = useMutation({
-        mutationKey: ['add-person-visitor'],
+        mutationKey: ['add-person-non-pdl-visitor'],
         mutationFn: async () => {
             if (!personForm.first_name ||
                 !personForm.last_name ||
-                !visitorForm.visitor_type_id ||
+                !nonPdlVisitorForm.id_number ||
                 !personForm.gender_id ||
                 !personForm.date_of_birth ||
                 !personForm.place_of_birth ||
@@ -545,7 +516,7 @@ const NonPdlVisitorRegistration = () => {
 
             try {
                 await Promise.all([
-                    addVisitorMutation.mutateAsync(id),
+                    addNonPdlVisitorMutation.mutateAsync(id),
                     ...(enrollFormFace?.upload_data ? [enrollFaceMutation.mutateAsync(id)] : []),
                     ...(enrollFormLeftIris?.upload_data ? [enrollLeftMutation.mutateAsync(id)] : []),
                     ...(enrollFormRightIris?.upload_data ? [enrollRightMutation.mutateAsync(id)] : []),
@@ -586,8 +557,8 @@ const NonPdlVisitorRegistration = () => {
     const municipalities = dropdownOptions?.[7]?.data
     const barangays = dropdownOptions?.[8]?.data
     const countries = dropdownOptions?.[9]?.data
-    const persons = dropdownOptions?.[10]?.data
-    const personsLoading = dropdownOptions?.[10]?.isLoading
+    const personnel = dropdownOptions?.[10]?.data
+    const personnelLoading = dropdownOptions?.[10]?.isLoading
     const users = dropdownOptions?.[11]?.data
     const userLoading = dropdownOptions?.[11]?.isLoading
     const visitorAppStatus = dropdownOptions?.[12]?.data
@@ -597,8 +568,10 @@ const NonPdlVisitorRegistration = () => {
     const prefixesLoading = dropdownOptions?.[14]?.isLoading
     const suffixes = dropdownOptions?.[15]?.data
     const suffixesLoading = dropdownOptions?.[15]?.isLoading
-    const birthClassTypes = dropdownOptions?.[16]?.data
-    const birthClassTypesLoading = dropdownOptions?.[16]?.isLoading
+    const relationships = dropdownOptions?.[16]?.data
+    const relationshipsLoading = dropdownOptions?.[16]?.isLoading
+    const reasons = dropdownOptions?.[17]?.data
+    const reasonsLoading = dropdownOptions?.[17]?.isLoading
 
 
     const addressDataSource = personForm?.address_data?.map((address, index) => {
@@ -779,11 +752,11 @@ const NonPdlVisitorRegistration = () => {
 
 
     useEffect(() => {
-        setVisitorForm(prev => ({
+        setNonPdlVisitorForm(prev => ({
             ...prev,
-            verified_by: currentUser?.id ?? 0
+            verified_by: `${currentUser?.first_name ?? ""} ${currentUser?.last_name ?? ""}`
         }))
-    }, [visitorForm?.verified_by, currentUser?.id])
+    }, [nonPdlVisitorForm?.verified_by, currentUser?.first_name, currentUser?.last_name])
 
     useEffect(() => {
         const short = `${personForm?.first_name?.[0] ?? ""}${personForm?.last_name?.[0] ?? ""}`;
@@ -792,7 +765,7 @@ const NonPdlVisitorRegistration = () => {
 
 
     // console.log(visitorForm)
-    // console.log("Person Form: ", personForm)
+    console.log(nonPdlVisitorForm)
 
     return (
         <div className='bg-white rounded-md shadow border border-gray-200 py-5 px-7 w-full mb-5'>
@@ -814,11 +787,18 @@ const NonPdlVisitorRegistration = () => {
                                 <Select
                                     showSearch
                                     optionFilterProp="label"
+                                    value={nonPdlVisitorForm?.non_pdl_visitor_type_id}
                                     className='mt-2 h-10 rounded-md outline-gray-300 !bg-gray-100'
                                     options={visitorTypes?.map(type => ({
                                         value: type?.id,
                                         label: type?.visitor_type
                                     }))}
+                                    onChange={value => {
+                                        setNonPdlVisitorForm(prev => ({
+                                            ...prev,
+                                            non_pdl_visitor_type_id: value
+                                        }))
+                                    }}
                                 />
                             </div>
 
@@ -852,13 +832,23 @@ const NonPdlVisitorRegistration = () => {
 
                             <div className='flex flex-col mt-2 flex-[2]'>
                                 <div className='flex gap-1 font-semibold'>Relationship of Visitor to Personnel<span className="text-red-600">*</span></div>
-                                <Input
-                                    className='mt-2 px-3 py-2 rounded-md outline-gray-300'
-                                    type="text"
-                                    name="middle-name"
-                                    placeholder="Middle Name"
-                                    required
-                                    onChange={(e) => setPersonForm(prev => ({ ...prev, middle_name: e.target.value }))}
+                                <Select
+                                    loading={relationshipsLoading}
+                                    showSearch
+                                    optionFilterProp="label"
+                                    className='mt-2 h-10 rounded-md outline-gray-300 !bg-gray-100'
+                                    options={relationships?.map(relationship => ({
+                                        value: relationship?.id,
+                                        label: relationship?.relationship_name
+                                    }))}
+                                    onChange={(value) => {
+                                        setNonPdlVisitorForm(prev => (
+                                            {
+                                                ...prev,
+                                                visitor_rel_personnel_id: value
+                                            }
+                                        ))
+                                    }}
                                 />
                             </div>
                         </div>
@@ -975,7 +965,7 @@ const NonPdlVisitorRegistration = () => {
                                 <div className='flex gap-1 font-semibold'>Date of Birth<p className='text-red-600'>*</p></div>
                                 <DatePicker
                                     placeholder="YYYY-MM-DD"
-                                    className="mt-2 h-10 rounded-md outline-gray-300 !bg-gray-100"
+                                    className="mt-2 h-10 rounded-md outline-gray-300"
                                     onChange={(date) =>
                                         setPersonForm((prev) => ({
                                             ...prev,
@@ -1039,7 +1029,7 @@ const NonPdlVisitorRegistration = () => {
                                         setPersonForm(prev => (
                                             {
                                                 ...prev,
-                                                gender_id: value
+                                                religion_id: value
                                             }
                                         ))
                                     }}
@@ -1054,16 +1044,30 @@ const NonPdlVisitorRegistration = () => {
                                 <label className="flex flex-col flex-[3]">
                                     <span className="font-semibold flex gap-1">Personnel Name<span className='text-red-600'>*</span></span>
                                     <Select
-                                        loading={nationalitiesLoading}
+                                        loading={personnelLoading}
                                         showSearch
                                         optionFilterProp="label"
                                         placeholder="Personnel Name"
+                                        value={nonPdlVisitorForm?.personnel_id}
                                         className='mt-2 h-10 rounded-md outline-gray-300 flex-1'
+                                        options={personnel?.map(person => ({
+                                            label: `${person?.person?.first_name} ${person?.person?.last_name}`,
+                                            value: person?.id
+                                        }))}
+                                        onChange={(value) => {
+                                            setNonPdlVisitorForm(prev => (
+                                                {
+                                                    ...prev,
+                                                    personnel_id: value
+                                                }
+                                            ))
+                                        }}
                                     />
                                 </label>
                                 <label>
                                     <span className="font-semibold flex gap-1">Personnel Type<span className='text-red-600'>*</span></span>
                                     <Input
+                                        value={personnel?.find(person => person?.id === nonPdlVisitorForm?.personnel_id)?.person?.first_name}
                                         readOnly
                                         placeholder="Personnel Name"
                                         className='mt-2 h-10 rounded-md outline-gray-300'
@@ -1072,23 +1076,39 @@ const NonPdlVisitorRegistration = () => {
                                 <label className="flex flex-col flex-1">
                                     <span className="font-semibold flex gap-1">Rank<span className='text-red-600'>*</span></span>
                                     <Input
+                                        value={personnel?.find(person => person?.id === nonPdlVisitorForm?.personnel_id)?.rank}
                                         readOnly
-                                        placeholder="Personnel Name"
+                                        placeholder="Rank"
                                         className='mt-2 h-10 rounded-md outline-gray-300'
                                     />
                                 </label>
                                 <label className="flex flex-col flex-[3]">
                                     <span className="font-semibold flex gap-1">Position<span className='text-red-600'>*</span></span>
                                     <Input
+                                        value={personnel?.find(person => person?.id === nonPdlVisitorForm?.personnel_id)?.position}
                                         readOnly
-                                        placeholder="Personnel Name"
+                                        placeholder="Position"
                                         className='mt-2 h-10 rounded-md outline-gray-300'
                                     />
                                 </label>
                                 <label className="flex flex-col flex-[4]">
                                     <span className="font-semibold flex gap-1">Reason for Visit<span className='text-red-600'>*</span></span>
-                                    <Input
+                                    <Select
+                                        loading={reasonsLoading}
+                                        value={nonPdlVisitorForm?.non_pdl_visitor_reason_id}
                                         className='mt-2 h-10 rounded-md outline-gray-300'
+                                        showSearch
+                                        optionFilterProp="label"
+                                        options={reasons?.map(reason => ({
+                                            label: reason?.reason_visit,
+                                            value: reason?.id
+                                        }))}
+                                        onChange={value => {
+                                            setNonPdlVisitorForm(prev => ({
+                                                ...prev,
+                                                non_pdl_visitor_reason_id: value
+                                            }))
+                                        }}
                                     />
                                 </label>
                             </div>
@@ -1142,7 +1162,10 @@ const NonPdlVisitorRegistration = () => {
                 </div>
             </form>
 
-            <Identifiers />
+            <Identifiers
+                personForm={personForm}
+                setPersonForm={setPersonForm}
+            />
 
             {/**Biometrics */}
             <VisitorProfile
@@ -1210,7 +1233,7 @@ const NonPdlVisitorRegistration = () => {
             <Remarks
                 deleteRemarksByIndex={deleteRemarksByIndex}
                 currentUser={currentUser ?? null}
-                setVisitorForm={setVisitorForm}
+                setVisitorForm={setNonPdlVisitorForm}
             />
 
             <form>
@@ -1228,9 +1251,9 @@ const NonPdlVisitorRegistration = () => {
                                         label: status?.status,
                                     }))}
                                     onChange={value => {
-                                        setVisitorForm(prev => ({
+                                        setNonPdlVisitorForm(prev => ({
                                             ...prev,
-                                            visitor_app_status_id: value
+                                            visitor_status_id: value
                                         }))
                                     }}
                                 />
@@ -1258,7 +1281,7 @@ const NonPdlVisitorRegistration = () => {
                                         label: `${user?.first_name ?? ""} ${user?.last_name ?? ""} ${user?.last_name ?? ""}`,
                                     }))}
                                     onChange={value => {
-                                        setVisitorForm(prev => ({
+                                        setNonPdlVisitorForm(prev => ({
                                             ...prev,
                                             approved_by: value
                                         }))
@@ -1280,7 +1303,7 @@ const NonPdlVisitorRegistration = () => {
                                 <input
                                     type="text"
                                     className="mt-2 px-3 py-2 rounded-md outline-gray-300 bg-gray-100"
-                                    onChange={e => setVisitorForm(prev => ({ ...prev, id_number: Number(e.target.value) }))}
+                                    onChange={e => setNonPdlVisitorForm(prev => ({ ...prev, id_number: e.target.value }))}
                                 />
                             </div>
 

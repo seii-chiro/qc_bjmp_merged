@@ -839,8 +839,8 @@ const PdlRegistration = () => {
     }, [personForm.first_name, personForm.last_name]);
 
 
-    console.log("PDL Form: ", pdlForm)
-    console.log("Person Form: ", personForm)
+    // console.log("PDL Form: ", pdlForm)
+    // console.log("Person Form: ", personForm)
 
     return (
         <div className='bg-white rounded-md shadow border border-gray-200 py-5 px-7 w-full mb-5'>

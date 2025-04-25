@@ -50,7 +50,7 @@ import Personnels from "./pages/personnel_management/Personnel.tsx";
 import Personnel from "./pages/personnel_management/personnel/personnel.tsx";
 import Home2 from "./pages/home/Home2/Home.tsx";
 import Database from "./pages/database/database.tsx";
-import VisitorRegistration from "./pages/visitor_management/visitorregistration.tsx";
+import VisitorRegistration from "./pages/visitor_management/visitor-data-entry/visitorregistration.tsx";
 import Dashboard from "./pages/dashboard/Dashboard.tsx";
 import VisitorCodeIdentification from "./pages/visitor_management/VisitorCodeIdentification.tsx";
 import Issues from "./pages/visitor_management/issues.tsx";
@@ -80,6 +80,7 @@ import PdlRegistration from "./pages/visitor_management/pdl-data-entry/PdlRegist
 import PersonnelRegistration from "./pages/visitor_management/personnel-data-entry/PersonnelRegistration.tsx";
 import NonPdlVisitorRegistration from "./pages/visitor_management/non-pdl-visitor-data-entry/NonPdlVisitorRegistration.tsx";
 import ServiceProviderRegistration from "./pages/visitor_management/service-provider-data-entry/ServiceProviderRegistration.tsx";
+import Test from "./pages/Test.tsx";
 
 // Lazy-loaded components
 const Home = React.lazy(() => import("./pages/dashboard/Home.tsx"));
@@ -446,6 +447,10 @@ function App() {
                     path: "log-monitoring/visit-logs",
                     element: <VisitLog />
                 },
+                {
+                    path: "test",
+                    element: <Test />
+                }
             ],
         },
     ],

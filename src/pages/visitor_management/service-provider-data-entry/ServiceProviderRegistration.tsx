@@ -19,8 +19,6 @@ import ContactForm from "../visitor-data-entry/ContactForm";
 import Remarks from "../visitor-data-entry/Remarks";
 import { BiometricRecordFace } from "@/lib/scanner-definitions";
 import { BASE_URL, BIOMETRIC, PERSON } from "@/lib/urls";
-import EducAttainment from "../pdl-data-entry/EducAttainment";
-import FMC from "../pdl-data-entry/FMC";
 import Identifiers from "../personnel-data-entry/Identifiers";
 
 const addPerson = async (payload: PersonForm, token: string) => {

@@ -260,3 +260,27 @@ export interface PDLs {
   visitation_status: string;
   cases: Case[];
 }
+
+export interface Personnel {
+  id: number;
+  created_by: string;
+  updated_by: string;
+  encrypted_personnel_reg_no: string;
+  encrypted_id_number: string;
+  organization: string;
+  jail: string;
+  person: Person; // or a more specific type if you have one
+  rank: string;
+  status: string;
+  personnel_app_status: string;
+  position: string;
+  record_status: string;
+  remarks: string;
+  created_at: string; // or Date if parsed
+  updated_at: string; // or Date if parsed
+  personnel_reg_no: string;
+  id_number: string;
+  shortname: string;
+  date_joined: string; // or Date if parsed
+  personnel_type: number;
+}

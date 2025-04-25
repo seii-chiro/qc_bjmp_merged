@@ -132,7 +132,12 @@ import {
   PersonnelAppStatus,
   Offense,
 } from "./definitions";
-import { Religion, Person as NewPerson } from "./pdl-definitions";
+import {
+  Religion,
+  Person as NewPerson,
+  Personnel as newPersonnel,
+  PDLs as NewPDL,
+} from "./pdl-definitions";
 import { EducationalAttainment } from "./visitorFormDefinition";
 
 export async function getVisitors(token: string): Promise<Visitors[]> {
@@ -150,7 +155,7 @@ export async function getVisitors(token: string): Promise<Visitors[]> {
   return res.json();
 }
 
-export async function getPDLs(token: string): Promise<PDLs[]> {
+export async function getPDLs(token: string): Promise<NewPDL[]> {
   const res = await fetch(PDL.getPDL, {
     headers: {
       "Content-Type": "application/json",
@@ -1197,7 +1202,7 @@ export const updateJailArea = async (
   return response.json();
 };
 
-export async function getPersonnel(token: string): Promise<Personnel[]> {
+export async function getPersonnel(token: string): Promise<newPersonnel[]> {
   const res = await fetch(PERSONNEL.getPersonnel, {
     headers: {
       "Content-Type": "application/json",

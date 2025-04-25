@@ -2306,3 +2306,56 @@ export type PersonnelAppStatus = {
   created_by: number;
   updated_by: number;
 };
+
+export type PersonnelType = {
+  id: number;
+  created_by: string;
+  updated_by: string;
+  record_status: string;
+  created_at: string;
+  updated_at: string;
+  name: string;
+  description: string;
+};
+
+export type PersonnelStatus = {
+  id: number;
+  created_by: string;
+  updated_by: string;
+  record_status: string;
+  created_at: string;
+  updated_at: string;
+  key: string;
+  value: string;
+  description: string;
+  device: number;
+};
+
+export type NonPdlVisitorReasonVisit = {
+  id: number;
+  created_by: string;
+  updated_by: string;
+  risk_level: string;
+  impact_level: string;
+  threat_level: string;
+  record_status: string;
+  created_at: string; // ISO 8601 format
+  updated_at: string; // ISO 8601 format
+  reason_visit: string;
+  description: string;
+  risks: string;
+  impacts: string;
+  threats: string;
+  mitigation: string;
+};
+
+export type Relationship = {
+  id: number;
+  created_by: string;
+  updated_by: string;
+  record_status: string;
+  created_at: string; // ISO 8601 format
+  updated_at: string; // ISO 8601 format
+  relationship_name: string;
+  description: string;
+};

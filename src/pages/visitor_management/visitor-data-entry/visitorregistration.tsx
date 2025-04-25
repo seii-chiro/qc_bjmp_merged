@@ -124,14 +124,12 @@ const VisitorRegistration = () => {
         visited_pdl_twin_name: "",
         remarks: "",
         visitor_app_status_id: null,
-        // org_id: 0,
-        // jail_id: 0,
         person_id: 0,
         visitor_type_id: 0,
         record_status_id: 1,
         verified_by: 0,
         approved_by: 0,
-        pdl: [],
+        pdl_data: [],
         remarks_data: [],
         id_number: null,
     })
@@ -313,7 +311,7 @@ const VisitorRegistration = () => {
     const deletePdlToVisit = (index: number) => {
         setVisitorForm(prev => ({
             ...prev,
-            pdl: prev?.pdl?.filter((_, i) => i !== index)
+            pdl_data: prev?.pdl_data?.filter((_, i) => i !== index)
         }));
     };
 

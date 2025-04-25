@@ -21,6 +21,7 @@ import { BiometricRecordFace } from "@/lib/scanner-definitions";
 import { BASE_URL, BIOMETRIC, PERSON } from "@/lib/urls";
 import EducAttainment from "../pdl-data-entry/EducAttainment";
 import FMC from "../pdl-data-entry/FMC";
+import { getPersonnelTypes } from "@/lib/additionalQueries";
 
 const addPerson = async (payload: PersonForm, token: string) => {
 
@@ -115,7 +116,7 @@ const PersonnelRegistration = () => {
         multiple_birth_sibling_data: [],
     })
     const [personnelForm, setPersonnelForm] = useState<PersonnelForm>({
-        jail_id: null,
+        jail_id: 1,
         id_number: null,
         person_id: null,
         date_joined: "",
@@ -127,7 +128,6 @@ const PersonnelRegistration = () => {
         rank_id: null,
         remarks_data: [],
         shortname: "",
-        status_id: null,
         approved_by: null,
         verified_by: null,
         region_origin_id: null,
@@ -400,6 +400,11 @@ const PersonnelRegistration = () => {
                 queryFn: () => getEthnicityProvinces(token ?? ""),
                 staleTime: 10 * 60 * 1000
             },
+            {
+                queryKey: ['personnel-types'],
+                queryFn: () => getPersonnelTypes(token ?? ""),
+                staleTime: 10 * 60 * 1000
+            },
         ]
     })
 
@@ -497,8 +502,8 @@ const PersonnelRegistration = () => {
     const addPersonnelMutation = useMutation({
         mutationKey: ['add-visitor'],
         mutationFn: (id: number) => registerPersonnel({ ...personnelForm, person_id: id }, token ?? ""),
-        onSuccess: () => message.success('Successfully registered visitor'),
-        onError: () => message.error("Failed to register visitor")
+        onSuccess: () => message.success('Successfully registered personnel'),
+        onError: () => message.error("Failed to register personnel")
     })
 
 
@@ -567,7 +572,7 @@ const PersonnelRegistration = () => {
     const personnelAppStatusLoading = dropdownOptions?.[10]?.isLoading
     const currentUser = dropdownOptions?.[11]?.data
     const prefixes = dropdownOptions?.[12]?.data
-    const prefixesLoading = dropdownOptions?.[12]?.isLoading
+    // const prefixesLoading = dropdownOptions?.[12]?.isLoading
     const suffixes = dropdownOptions?.[13]?.data
     const suffixesLoading = dropdownOptions?.[13]?.isLoading
     const ranks = dropdownOptions?.[14]?.data
@@ -578,6 +583,8 @@ const PersonnelRegistration = () => {
     const personsLoading = dropdownOptions?.[16]?.isLoading
     const ethnicities = dropdownOptions?.[17]?.data
     const ethnicitiesLoading = dropdownOptions?.[17]?.isLoading
+    const personnelTypes = dropdownOptions?.[18]?.data
+    const personnelTypesLoading = dropdownOptions?.[18]?.isLoading
 
 
     const addressDataSource = personForm?.address_data?.map((address, index) => {
@@ -771,7 +778,7 @@ const PersonnelRegistration = () => {
 
 
     // console.log(visitorForm)
-    // console.log("Person Form: ", personForm)
+    console.log("Personnel Form: ", personnelForm)
 
     return (
         <div className='bg-white rounded-md shadow border border-gray-200 py-5 px-7 w-full mb-5'>
@@ -785,15 +792,28 @@ const PersonnelRegistration = () => {
                             <div className='flex flex-col mt-2 flex-1'>
                                 <div className='flex gap-1 font-semibold'>Registration No.<span className='text-red-600'>*</span></div>
                                 <Input
+                                    readOnly
+                                    placeholder="xxxx-xxxx-xxxx-xxxx"
                                     className='mt-2 h-10 rounded-md outline-gray-300'
                                 />
                             </div>
                             <div className='flex flex-col mt-2 flex-1'>
                                 <div className='flex gap-1 font-semibold'>Personnel Type<p className='text-red-600'>*</p></div>
                                 <Select
+                                    loading={personnelTypesLoading}
                                     showSearch
                                     optionFilterProp="label"
                                     className='mt-2 h-10 rounded-md outline-gray-300 !bg-gray-100'
+                                    options={personnelTypes?.map(type => ({
+                                        value: type?.id,
+                                        label: type?.name
+                                    }))}
+                                    onChange={value => {
+                                        setPersonnelForm(prev => ({
+                                            ...prev,
+                                            personnel_type: value
+                                        }))
+                                    }}
                                 />
                             </div>
 
@@ -857,7 +877,13 @@ const PersonnelRegistration = () => {
                                 <div className='flex gap-1 font-semibold'>Date Joined<span className="text-red-600">*</span></div>
                                 <DatePicker
                                     placeholder="YYYY-MM-DD"
-                                    className='mt-2 h-10 rounded-md outline-gray-300'
+                                    className="mt-2 h-10 rounded-md outline-gray-300"
+                                    onChange={(date) =>
+                                        setPersonnelForm((prev) => ({
+                                            ...prev,
+                                            date_joined: date?.format("YYYY-MM-DD") ?? "",
+                                        }))
+                                    }
                                 />
                             </div>
                         </div>
@@ -875,10 +901,10 @@ const PersonnelRegistration = () => {
                                         label: rank?.rank_name
                                     }))}
                                     onChange={(value) => {
-                                        setPersonForm(prev => (
+                                        setPersonnelForm(prev => (
                                             {
                                                 ...prev,
-                                                prefix: value
+                                                rank_id: value
                                             }
                                         ))
                                     }}
@@ -947,10 +973,10 @@ const PersonnelRegistration = () => {
                                         label: position?.position_title
                                     }))}
                                     onChange={(value) => {
-                                        setPersonForm(prev => (
+                                        setPersonnelForm(prev => (
                                             {
                                                 ...prev,
-                                                gender_id: value
+                                                position_id: value
                                             }
                                         ))
                                     }}
@@ -975,7 +1001,7 @@ const PersonnelRegistration = () => {
                                 <div className='flex gap-1 font-semibold'>Date of Birth<p className='text-red-600'>*</p></div>
                                 <DatePicker
                                     placeholder="YYYY-MM-DD"
-                                    className="mt-2 h-10 rounded-md outline-gray-300 !bg-gray-100"
+                                    className="mt-2 h-10 rounded-md outline-gray-300"
                                     onChange={(date) =>
                                         setPersonForm((prev) => ({
                                             ...prev,
@@ -1171,7 +1197,7 @@ const PersonnelRegistration = () => {
             <Remarks
                 deleteRemarksByIndex={deleteRemarksByIndex}
                 currentUser={currentUser ?? null}
-                setVisitorForm={setPersonForm}
+                setVisitorForm={setPersonnelForm}
             />
 
             <form>

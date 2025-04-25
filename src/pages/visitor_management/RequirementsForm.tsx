@@ -23,7 +23,8 @@ const RequirementsForm = ({ handleRequirementsModalCancel, setPersonForm }: Prop
         },
         record_status_id: 1,
         remarks: "",
-        status: "Under Review"
+        status: "Under Review",
+        direct_image: ""
     })
 
     const handlePreview = async (file: UploadFile) => {
@@ -59,6 +60,7 @@ const RequirementsForm = ({ handleRequirementsModalCancel, setPersonForm }: Prop
                             ...prev.media_data,
                             media_base64: base64String,
                         },
+                        direct_image: base64String
                     }));
                 }
                 return file;
@@ -228,6 +230,7 @@ const RequirementsForm = ({ handleRequirementsModalCancel, setPersonForm }: Prop
                                     record_status_id: 1,
                                 },
                                 status: "Under Review",
+                                direct_image: ""
                             })
                             setFileList([])
                             handleRequirementsModalCancel()
@@ -243,7 +246,7 @@ const RequirementsForm = ({ handleRequirementsModalCancel, setPersonForm }: Prop
                                 message.error('Please fill in all required fields!');
                                 return; // Prevent submission
                             }
-                            
+
                             setPersonForm((prev) => ({
                                 ...prev,
                                 media_requirement_data: [
@@ -267,6 +270,7 @@ const RequirementsForm = ({ handleRequirementsModalCancel, setPersonForm }: Prop
                                     record_status_id: 1,
                                 },
                                 status: "Under Review",
+                                direct_image: ""
                             })
                             setFileList([])
                             handleRequirementsModalCancel()

@@ -30,8 +30,8 @@ const PDLToVisitForm = ({
     visitorForm
 }: Props) => {
     const [pdlToVisitID, setPdlToVisitID] = useState<number | null>(() => {
-        if (editPdlToVisitIndex !== null && visitorForm?.pdl?.[editPdlToVisitIndex]) {
-            return visitorForm.pdl[editPdlToVisitIndex].pdl
+        if (editPdlToVisitIndex !== null && visitorForm?.pdl_data?.[editPdlToVisitIndex]) {
+            return visitorForm.pdl_data[editPdlToVisitIndex].pdl
         }
         return null
     })
@@ -154,7 +154,7 @@ const PDLToVisitForm = ({
         };
 
         // Prevent duplicates
-        const isAlreadyInVisitorForm = visitorForm?.pdl?.some((item, idx) => {
+        const isAlreadyInVisitorForm = visitorForm?.pdl_data?.some((item, idx) => {
             if (isEdit && idx === editPdlToVisitIndex) return false;
             return item.pdl === newPdlId;
         });
@@ -165,7 +165,7 @@ const PDLToVisitForm = ({
         }
 
         setVisitorForm(prev => {
-            const updated = [...(prev.pdl || [])];
+            const updated = [...(prev.pdl_data || [])];
 
             if (isEdit) {
                 updated[editPdlToVisitIndex!] = newEntry;

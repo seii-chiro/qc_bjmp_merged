@@ -96,10 +96,12 @@ const PDLtovisit = ({
     }
 
     const handleRequirementsModalOpen = () => {
+        setRequirementIndexToEdit(null);
         setRequirementModalOpen(true)
     }
 
     const handleRequirementsModalCancel = () => {
+        setRequirementIndexToEdit(null);
         setRequirementModalOpen(false)
     }
 
@@ -247,7 +249,7 @@ const PDLtovisit = ({
                     <FullScreen handle={requirementFullscreenHandle} className="flex items-center justify-center">
                         <img
                             src={`data:image/bmp;base64,${requirement?.media_data?.media_base64}`}
-                            alt="Identifier"
+                            alt="requirement"
                             style={{
                                 width: requirementFullscreenHandle?.active ? '50%' : '50px',
                                 height: requirementFullscreenHandle?.active ? '50%' : '50px',

@@ -30,8 +30,8 @@ const PDLToVisitForm = ({
     visitorForm
 }: Props) => {
     const [pdlToVisitID, setPdlToVisitID] = useState<number | null>(() => {
-        if (editPdlToVisitIndex !== null && visitorForm?.pdl?.[editPdlToVisitIndex]) {
-            return visitorForm.pdl[editPdlToVisitIndex].pdl
+        if (editPdlToVisitIndex !== null && visitorForm?.pdl_data?.[editPdlToVisitIndex]) {
+            return visitorForm.pdl_data[editPdlToVisitIndex].pdl_id
         }
         return null
     })
@@ -133,7 +133,6 @@ const PDLToVisitForm = ({
         }
     };
 
-
     const handleAddPdlToVisit = () => {
         if (selectedPdl === null) {
             message.error("Please select a PDL to visit");
@@ -149,14 +148,14 @@ const PDLToVisitForm = ({
         const isEdit = editPdlToVisitIndex !== null;
 
         const newEntry = {
-            pdl: newPdlId,
-            relationship_to_pdl: helperForm.relationship as number,
+            pdl_id: newPdlId,
+            relationship_to_pdl_id: helperForm.relationship as number,
         };
 
         // Prevent duplicates
-        const isAlreadyInVisitorForm = visitorForm?.pdl?.some((item, idx) => {
+        const isAlreadyInVisitorForm = visitorForm?.pdl_data?.some((item, idx) => {
             if (isEdit && idx === editPdlToVisitIndex) return false;
-            return item.pdl === newPdlId;
+            return item.pdl_id === newPdlId;
         });
 
         if (isAlreadyInVisitorForm) {
@@ -165,7 +164,7 @@ const PDLToVisitForm = ({
         }
 
         setVisitorForm(prev => {
-            const updated = [...(prev.pdl || [])];
+            const updated = [...(prev.pdl_data || [])];
 
             if (isEdit) {
                 updated[editPdlToVisitIndex!] = newEntry;
@@ -175,29 +174,32 @@ const PDLToVisitForm = ({
 
             return {
                 ...prev,
-                pdl: updated,
+                pdl_data: updated,
             };
         });
 
-        message.success(isEdit ? "PDL to visit updated successfully!" : "PDL to visit added successfully!");
-        insertHelperForm();
+        insertHelperForm()
 
-        // Reset
-        setPdlToVisitID(null);
-        setSelectedPdl(null);
-        setHelperForm({
-            lastName: null,
-            firstName: null,
-            middleName: null,
-            relationship: null,
-            level: null,
-            annex: null,
-            dorm: null,
-            visitationStatus: null,
-            multipleBirthClass: null,
-        });
+        setTimeout(() => {
+            message.success(isEdit ? "PDL to visit updated successfully!" : "PDL to visit added successfully!");
 
-        handlePdlToVisitModalCancel();
+            // Reset
+            setPdlToVisitID(null);
+            setSelectedPdl(null);
+            setHelperForm({
+                lastName: null,
+                firstName: null,
+                middleName: null,
+                relationship: null,
+                level: null,
+                annex: null,
+                dorm: null,
+                visitationStatus: null,
+                multipleBirthClass: null,
+            });
+
+            handlePdlToVisitModalCancel();
+        }, 100);
     };
 
 

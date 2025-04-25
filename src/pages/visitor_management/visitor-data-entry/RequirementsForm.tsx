@@ -26,7 +26,8 @@ const RequirementsForm = ({ handleRequirementsModalCancel, setPersonForm, editRe
         },
         record_status_id: 1,
         remarks: "",
-        status: "Under Review"
+        status: "Under Review",
+        direct_image: ""
     })
 
     const handlePreview = async (file: UploadFile) => {
@@ -62,6 +63,7 @@ const RequirementsForm = ({ handleRequirementsModalCancel, setPersonForm, editRe
                             ...prev.media_data,
                             media_base64: base64String,
                         },
+                        direct_image: base64String
                     }));
                 }
                 return file;
@@ -95,6 +97,7 @@ const RequirementsForm = ({ handleRequirementsModalCancel, setPersonForm, editRe
         }
     }, [editRequirement]);
 
+    console.log(requirementForm)
 
     return (
         <div className='w-full mt-5'>
@@ -248,6 +251,7 @@ const RequirementsForm = ({ handleRequirementsModalCancel, setPersonForm, editRe
                                     record_status_id: 1,
                                 },
                                 status: "Under Review",
+                                direct_image: ""
                             })
                             setFileList([])
                             handleRequirementsModalCancel()
@@ -266,7 +270,7 @@ const RequirementsForm = ({ handleRequirementsModalCancel, setPersonForm, editRe
                             setPersonForm((prev) => {
                                 const updatedRequirements = [...(prev.media_requirement_data || [])];
 
-                                if (typeof requirementIndexToEdit === 'number') {
+                                if (requirementIndexToEdit !== null) {
                                     updatedRequirements[requirementIndexToEdit] = requirementForm;
                                 } else {
                                     updatedRequirements.push(requirementForm);
@@ -279,9 +283,9 @@ const RequirementsForm = ({ handleRequirementsModalCancel, setPersonForm, editRe
                             });
 
                             message.success(
-                                typeof requirementIndexToEdit === 'number'
-                                    ? 'Requirement updated successfully!'
-                                    : 'Requirement added successfully!'
+                                requirementIndexToEdit !== null
+                                    ? 'Requirement added successfully!'
+                                    : 'Requirement updated successfully!'
                             );
 
                             setRequirementForm({
@@ -299,12 +303,13 @@ const RequirementsForm = ({ handleRequirementsModalCancel, setPersonForm, editRe
                                     record_status_id: 1,
                                 },
                                 status: "Under Review",
+                                direct_image: ""
                             });
                             setFileList([]);
                             handleRequirementsModalCancel();
                         }}
                     >
-                        {typeof requirementIndexToEdit === 'number' ? 'Save' : 'Add'}
+                        {requirementIndexToEdit !== null ? 'Add' : 'Save'}
                     </button>
                 </div>
             </form>

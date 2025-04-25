@@ -172,8 +172,6 @@ const Issue = () => {
         },
     ];
 
-    console.log(issueTable)
-
     return (
         <div>
             <div>
