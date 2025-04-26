@@ -26,6 +26,7 @@ import EducAttainment from "./EducAttainment";
 import FMC from "./FMC";
 import CaseDetails from "./CaseDetails";
 import PdlVisitor from "./PdlVisitor";
+import { getPDLVisitStatuses } from "@/lib/additionalQueries";
 
 const addPerson = async (payload: PersonForm, token: string) => {
 
@@ -140,6 +141,7 @@ const PdlRegistration = () => {
         building_id: null,
         cell_id: null,
         floor_id: null,
+        visitation_status_id: null,
     })
 
     const [icao, setIcao] = useState("")
@@ -477,6 +479,11 @@ const PdlRegistration = () => {
         queryKey: ['precincts'],
         queryFn: () => getPrecincts(token ?? ""),
         staleTime: 10 * 60 * 1000
+    })
+
+    const { data: pdlVisitStatuses, isLoading: pdlVisitStatusesLoading } = useQuery({
+        queryKey: ['visitation-statuses'],
+        queryFn: () => getPDLVisitStatuses(token ?? "")
     })
 
     const enrollFaceMutation = useMutation({
@@ -977,6 +984,27 @@ const PdlRegistration = () => {
                                             {
                                                 ...prev,
                                                 gang_affiliation_id: value
+                                            }
+                                        ))
+                                    }}
+                                />
+                            </div>
+                            <div className='flex flex-col mt-2 flex-1'>
+                                <div className='flex gap-1 font-semibold'>Visitation Status</div>
+                                <Select
+                                    loading={pdlVisitStatusesLoading}
+                                    showSearch
+                                    optionFilterProp="label"
+                                    className='mt-2 h-10 rounded-md outline-gray-300 !bg-gray-100'
+                                    options={pdlVisitStatuses?.map(status => ({
+                                        value: status?.id,
+                                        label: status?.name
+                                    }))}
+                                    onChange={(value) => {
+                                        setPdlForm(prev => (
+                                            {
+                                                ...prev,
+                                                visitation_status_id: value
                                             }
                                         ))
                                     }}

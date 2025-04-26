@@ -237,6 +237,7 @@ export type PDLForm = {
   floor_id: number | null;
   building_id: number | null;
   date_of_admission: string | null;
+  visitation_status_id: number | null;
 };
 
 export type CasesDetailsForm = {

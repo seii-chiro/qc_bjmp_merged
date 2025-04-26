@@ -1,6 +1,7 @@
 import {
   GroupAffiliation,
   NonPdlVisitorReasonVisit,
+  PDLVisitStatus,
   PersonnelStatus,
   PersonnelType,
   ProvidedService,
@@ -139,8 +140,30 @@ export async function getServiceProviderRemarks(
   return res.json();
 }
 
-export async function getGroupAffiliations(token: string): Promise<GroupAffiliation[]> {
-  const res = await fetch(`${BASE_URL}/api/service-providers/service-provider-group-affiliations/`, {
+export async function getGroupAffiliations(
+  token: string
+): Promise<GroupAffiliation[]> {
+  const res = await fetch(
+    `${BASE_URL}/api/service-providers/service-provider-group-affiliations/`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${token}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch Affiliations data.");
+  }
+
+  return res.json();
+}
+
+export async function getPDLVisitStatuses(
+  token: string
+): Promise<PDLVisitStatus[]> {
+  const res = await fetch(`${BASE_URL}/api/pdls/pdl-visitation-statuses/`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Token ${token}`,
@@ -148,7 +171,7 @@ export async function getGroupAffiliations(token: string): Promise<GroupAffiliat
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch Affiliations data.");
+    throw new Error("Failed to fetch PDL Visit Statuses data.");
   }
 
   return res.json();

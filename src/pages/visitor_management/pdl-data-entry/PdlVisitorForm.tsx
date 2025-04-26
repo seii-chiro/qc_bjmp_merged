@@ -276,7 +276,7 @@ const PDLVisitorForm = ({
                         </div>
                         <div className='flex w-full justify-between gap-4'>
                         </div>
-                        <div className='flex w-full justify-between gap-4'>
+                        {/* <div className='flex w-full justify-between gap-4'>
                             <label htmlFor="pdl-visitation-status" className='flex-1 flex flex-col gap-1'>
                                 <span className='font-semibold'>PDL Visitation Status <span className='text-red-500'>*</span></span>
                                 <Input
@@ -285,7 +285,7 @@ const PDLVisitorForm = ({
                                     className='h-12'
                                 />
                             </label>
-                        </div>
+                        </div> */}
                         <div className='flex w-full justify-between gap-4'>
                             <label htmlFor="relationship" className='flex-1 flex flex-col gap-1'>
                                 <span className='font-semibold'>Relationship <span className='text-red-500'>*</span></span>

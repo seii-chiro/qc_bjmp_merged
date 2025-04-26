@@ -2424,3 +2424,14 @@ export type GroupAffiliation = {
   name: string;
   description: string;
 };
+
+export type PDLVisitStatus = {
+  id: number;
+  created_by: string;
+  updated_by: string;
+  record_status: string;
+  created_at: string; // ISO 8601 Date-Time string
+  updated_at: string; // ISO 8601 Date-Time string
+  name: string;
+  description: string;
+};

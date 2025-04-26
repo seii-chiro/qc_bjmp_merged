@@ -137,10 +137,11 @@ import {
   Person as NewPerson,
   Personnel as newPersonnel,
   PDLs as NewPDL,
+  Visitor,
 } from "./pdl-definitions";
 import { EducationalAttainment } from "./visitorFormDefinition";
 
-export async function getVisitors(token: string): Promise<Visitors[]> {
+export async function getVisitors(token: string): Promise<Visitor[]> {
   const res = await fetch(`${BASE_URL}/api/visitors/visitor/`, {
     headers: {
       "Content-Type": "application/json",
