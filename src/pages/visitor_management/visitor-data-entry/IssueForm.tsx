@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
-import { Form, Button, Select, Row, Col, Typography, Space } from "antd";
+import React, { useEffect, useState } from "react";
+import { Button, Select, Row, Col, Typography, Space, message } from "antd";
 import { IssueFormData } from "./Issue";
 import { SaveOutlined, CloseOutlined } from "@ant-design/icons";
 import { Impact, ImpactLevel, IssueCategory, IssueStatus, IssueType, RecommendedAction, Risk, RiskLevel } from "@/lib/definitions";
+import { useTokenStore } from "@/store/useTokenStore";
+import { BASE_URL } from "@/lib/urls";
 
 const { Option } = Select;
 
@@ -48,43 +50,143 @@ const IssueForm: React.FC<IssueFormProps> = ({
     riskLevelsLoading,
     risks,
     risksLoading,
-    issueCategories,
-    issueCategoriesLoading,
+    // issueCategories,
+    // issueCategoriesLoading,
     issueTypes,
     issueTypesLoading
 }) => {
-    const [form] = Form.useForm();
+    // State to store form values
+    const token = useTokenStore()?.token
+    const [formValues, setFormValues] = useState<IssueFormData>({
+        issueType: null,
+        issueCategory: null,
+        risks: "",
+        riskLevel: "",
+        impactLevel: "",
+        impact: "",
+        recommendedAction: "",
+        status: null
+    });
 
+    // Effect to set initial form values if there's initial data
     useEffect(() => {
         if (initialData) {
-            form.setFieldsValue(initialData);
+            setFormValues({
+                ...initialData,
+                risks: String(initialData.risks) || "",  // Ensure it's always a string
+                riskLevel: String(initialData.riskLevel) || "",  // Ensure it's always a string
+                impactLevel: String(initialData.impactLevel) || "",  // Ensure it's always a string
+                impact: String(initialData.impact) || "",  // Ensure it's always a string
+                recommendedAction: String(initialData.recommendedAction) || "",  // Ensure it's always a string
+            });
         } else {
-            form.resetFields();
+            setFormValues({
+                issueType: null,
+                issueCategory: null,
+                risks: "",
+                riskLevel: "",
+                impactLevel: "",
+                impact: "",
+                recommendedAction: "",
+                status: null,
+            });
         }
-    }, [initialData, form]);
+    }, [initialData]);
 
-    const onFinish = (values: IssueFormData) => {
+    // Handle form input changes
+    const handleInputChange = (fieldName: string, value: string | number) => {
+        setFormValues(prev => ({
+            ...prev,
+            [fieldName]: value
+        }));
+    };
+
+
+    // Handle form submission
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Check if all required fields are filled
+        const requiredFields = ['issueType', 'risks', 'riskLevel', 'impactLevel', 'impact', 'recommendedAction', 'status'];
+        const missingFields = requiredFields.filter(field => !formValues[field as keyof IssueFormData]);
+
+        if (missingFields.length > 0) {
+            message.warning(`Please fill in the required fields: ${missingFields.join(', ')}`);
+            return;
+        }
+
         // Mapping IDs to names before saving
         const updatedValues = {
-            ...values,
-            issue: issueCategories.find(issue => issue.id === +values.issue)?.name || 'N/A',
-            risk: risks.find(risk => risk?.id === +values?.risks)?.name || 'N/A',
-            riskLevel: riskLevels.find(level => level.id === +values.riskLevel)?.risk_severity || 'N/A',
-            impactLevel: impactLevels.find(level => level.id === +values.impactLevel)?.impact_level || 'N/A',
-            impact: impact.find(impactItem => impactItem.id === +values.impact)?.name || 'N/A',
-            recommendedAction: recommendedActions.find(action => action.id === +values.recommendedAction)?.name || 'N/A',
-            status: issueStatuses.find(status => status.id === +values.status)?.description || 'N/A'
+            ...formValues,
+            issueType: formValues?.issueType,
+            risks: risks.find(risk => risk?.id === +formValues?.risks)?.name || 'N/A',
+            riskLevel: riskLevels.find(level => level.id === +formValues?.riskLevel)?.risk_severity || 'N/A',
+            impactLevel: impactLevels.find(level => level.id === +formValues?.impactLevel)?.impact_level || 'N/A',
+            impact: impact.find(impactItem => impactItem.id === +formValues?.impact)?.name || 'N/A',
+            recommendedAction: recommendedActions.find(action => action.id === +formValues?.recommendedAction)?.name || 'N/A',
+            status: formValues?.status
         };
 
-        if (editIndex !== null) {
-            updateIssue(editIndex, updatedValues);
-        } else {
-            setIssueTable(prevTable => [...prevTable, updatedValues]);
-        }
+        // Make the API request to submit the issue
+        try {
+            const response = await fetch(`${BASE_URL}/api/issues_v2/issues/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${token}` // If authentication is needed
+                },
+                body: JSON.stringify(updatedValues),
+            });
 
-        form.resetFields();
-        onCancel();
+            if (!response.ok) {
+                const errorData = await response.json();
+                message.error(`Error submitting issue: ${errorData.message || 'Unknown error'}`);
+                return;
+            }
+
+            // Handle successful submission
+            const responseData = await response.json();
+            message.success('Issue successfully submitted!');
+
+            // Add the new issue to the table or update it
+            if (editIndex !== null) {
+                updateIssue(editIndex, updatedValues);
+            } else {
+                setIssueTable(prevTable => [...prevTable, updatedValues]);
+            }
+
+            // Reset form and close
+            setFormValues({
+                issueType: null,
+                issueCategory: null,
+                risks: "",
+                riskLevel: "",
+                impactLevel: "",
+                impact: "",
+                recommendedAction: "",
+                status: null
+            });
+            onCancel();
+        } catch (error) {
+            message.error(JSON.stringify(error));
+        }
     };
+
+
+    useEffect(() => {
+        if (formValues?.issueType) {
+            const issueType = issueTypes?.find(type => type?.id === formValues?.issueType);
+            console.log("This issue:", issueType)
+
+            if (issueType) {
+                setFormValues(prev => ({
+                    ...prev,
+                    issueCategory: issueType?.issue_category?.id ?? null,
+                    risks: risks?.find(risk => risk?.name === issueType?.risk)?.name ?? "",
+                }));
+            }
+        }
+    }, [formValues?.issueType, issueTypes, risks]); // Added `risks` as a dependency for the effect
 
     return (
         <div className="issue-form-container" style={{ padding: "16px 8px" }}>
@@ -92,103 +194,119 @@ const IssueForm: React.FC<IssueFormProps> = ({
                 {editIndex !== null ? "Edit Issue" : "Add New Issue"}
             </Typography.Title>
 
-            <Form
-                form={form}
-                onFinish={onFinish}
-                layout="vertical"
-                initialValues={initialData || {}}
-            >
-                <Form.Item
-                    name="issue"
-                    label="Issue"
-                    rules={[{ required: true, message: "Please select an issue" }]}
-                >
-                    <Select placeholder="Select level" loading={issueCategoriesLoading} className="h-12">
-                        {issueCategories.map(option => (
+            <form onSubmit={handleSubmit}>
+                <div className="form-group mb-4">
+                    <label className="block mb-2 font-medium">Issue Type *</label>
+                    <Select
+                        placeholder="Select Type"
+                        loading={issueTypesLoading}
+                        className="w-full h-12"
+                        value={formValues.issueType || undefined}
+                        onChange={(value) => handleInputChange('issueType', value)}
+                    >
+                        {issueTypes.map(option => (
                             <Option key={option?.id} value={option?.id}>{option?.name}</Option>
                         ))}
                     </Select>
-                </Form.Item>
+                </div>
 
-                <Form.Item
-                    name="risks"
-                    label="Risks"
-                    rules={[{ required: true, message: "Please select a risk" }]}
-                >
-                    <Select placeholder="Select level" loading={risksLoading} className="h-12">
+                <div className="form-group mb-4">
+                    <label className="block mb-2 font-medium">Risks *</label>
+                    <Select
+                        placeholder="Select level"
+                        loading={risksLoading}
+                        className="w-full h-12"
+                        value={formValues.risks || undefined}
+                        onChange={(value) => handleInputChange('risks', value)}
+                    >
                         {risks.map(option => (
                             <Option key={option?.id} value={option?.id}>{option?.name}</Option>
                         ))}
                     </Select>
-                </Form.Item>
+                </div>
 
                 <Row gutter={24}>
                     <Col span={12}>
-                        <Form.Item
-                            name="riskLevel"
-                            label="Risk Level"
-                            rules={[{ required: true, message: "Please select risk level" }]}
-                        >
-                            <Select placeholder="Select level" loading={riskLevelsLoading} className="h-12">
+                        <div className="form-group mb-4">
+                            <label className="block mb-2 font-medium">Risk Level *</label>
+                            <Select
+                                placeholder="Select level"
+                                loading={riskLevelsLoading}
+                                className="w-full h-12"
+                                value={formValues.riskLevel || undefined}
+                                onChange={(value) => handleInputChange('riskLevel', value)}
+                            >
                                 {riskLevels.map(option => (
                                     <Option key={option?.id} value={option?.id}>{option?.risk_severity}</Option>
                                 ))}
                             </Select>
-                        </Form.Item>
+                        </div>
                     </Col>
                     <Col span={12}>
-                        <Form.Item
-                            name="impactLevel"
-                            label="Impact Level"
-                            rules={[{ required: true, message: "Please select impact level" }]}
-                        >
-                            <Select placeholder="Select level" loading={impactLevelsLoading} className="h-12">
+                        <div className="form-group mb-4">
+                            <label className="block mb-2 font-medium">Impact Level *</label>
+                            <Select
+                                placeholder="Select level"
+                                loading={impactLevelsLoading}
+                                className="w-full h-12"
+                                value={formValues.impactLevel || undefined}
+                                onChange={(value) => handleInputChange('impactLevel', value)}
+                            >
                                 {impactLevels.map(option => (
                                     <Option key={option?.id} value={option?.id}>{option?.impact_level}</Option>
                                 ))}
                             </Select>
-                        </Form.Item>
+                        </div>
                     </Col>
                 </Row>
 
-                <Form.Item
-                    name="impact"
-                    label="Impact"
-                    rules={[{ required: true, message: "Please select an Impact" }]}
-                >
-                    <Select placeholder="Select impact" loading={impactLoading} className="h-12">
+                <div className="form-group mb-4">
+                    <label className="block mb-2 font-medium">Impact *</label>
+                    <Select
+                        placeholder="Select impact"
+                        loading={impactLoading}
+                        className="w-full h-12"
+                        value={formValues.impact || undefined}
+                        onChange={(value) => handleInputChange('impact', value)}
+                    >
                         {impact.map(option => (
                             <Option key={option?.id} value={option?.id}>{option?.name}</Option>
                         ))}
                     </Select>
-                </Form.Item>
+                </div>
 
-                <Form.Item
-                    name="recommendedAction"
-                    label="Recommended Action"
-                    rules={[{ required: true, message: "Please select a Recommended Action" }]}
-                >
-                    <Select placeholder="Recommend an action" loading={recommendedActionsLoading} className="h-12">
+                <div className="form-group mb-4">
+                    <label className="block mb-2 font-medium">Recommended Action *</label>
+                    <Select
+                        placeholder="Recommend an action"
+                        loading={recommendedActionsLoading}
+                        className="w-full h-12"
+                        value={formValues.recommendedAction || undefined}
+                        onChange={(value) => handleInputChange('recommendedAction', value)}
+                    >
                         {recommendedActions.map(option => (
                             <Option key={option?.id} value={option?.id}>{option?.name}</Option>
                         ))}
                     </Select>
-                </Form.Item>
+                </div>
 
-                <Form.Item
-                    name="status"
-                    label="Status"
-                    rules={[{ required: true, message: "Please select status" }]}
-                >
-                    <Select placeholder="Select current status" loading={issueStatusesLoading} className="h-12">
+                <div className="form-group mb-4">
+                    <label className="block mb-2 font-medium">Status *</label>
+                    <Select
+                        placeholder="Select current status"
+                        loading={issueStatusesLoading}
+                        className="w-full h-12"
+                        value={formValues.status || undefined}
+                        onChange={(value) => handleInputChange('status', value)}
+                    >
                         {issueStatuses.map(option => (
                             <Option key={option?.id} value={option?.id}>{option?.description}</Option>
                         ))}
                     </Select>
-                </Form.Item>
+                </div>
 
-                <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
-                    <Space size="middle" style={{ float: "right" }}>
+                <div style={{ marginBottom: 0, marginTop: 24, textAlign: 'right' }}>
+                    <Space size="middle">
                         <Button
                             type="primary"
                             htmlType="submit"
@@ -203,8 +321,8 @@ const IssueForm: React.FC<IssueFormProps> = ({
                             Cancel
                         </Button>
                     </Space>
-                </Form.Item>
-            </Form>
+                </div>
+            </form>
         </div>
     );
 };

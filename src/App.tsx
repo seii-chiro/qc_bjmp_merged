@@ -55,7 +55,7 @@ import Dashboard from "./pages/dashboard/Dashboard.tsx";
 import VisitorCodeIdentification from "./pages/visitor_management/VisitorCodeIdentification.tsx";
 import Issues from "./pages/visitor_management/issues.tsx";
 import Visitor from "./pages/visitor_management/visitor.tsx";
-import IdentificationLandscape from "./pages/visitor_management/visitorIdentityLandscape.tsx";
+import IdentificationLandscape from "./pages/LOG/visitor-profiles/visitorIdentityLandscape.tsx";
 import Skills from "./pages/pdl_management/Skills/Skills.tsx";
 import Talents from "./pages/pdl_management/Talents/Talents.tsx";
 import Religion from "./pages/maintenance/Religion/Religion.tsx";
@@ -81,6 +81,7 @@ import PersonnelRegistration from "./pages/visitor_management/personnel-data-ent
 import NonPdlVisitorRegistration from "./pages/visitor_management/non-pdl-visitor-data-entry/NonPdlVisitorRegistration.tsx";
 import ServiceProviderRegistration from "./pages/visitor_management/service-provider-data-entry/ServiceProviderRegistration.tsx";
 import Test from "./pages/Test.tsx";
+import VisitorProfileSlider from "./pages/LOG/visitor-profiles/VisitorProfileSlider.tsx";
 
 // Lazy-loaded components
 const Home = React.lazy(() => import("./pages/dashboard/Home.tsx"));
@@ -448,13 +449,13 @@ function App() {
                     element: <VisitLog />
                 },
                 {
+                    path: "log-monitoring/visitor_check-in-out_profiles",
+                    element: <VisitorProfileSlider />
+                },
+                {
                     path: "test",
                     element: <Test />
                 },
-                {
-                    path: "ld",
-                    element: <IdentificationLandscape />
-                }
             ],
         },
     ],

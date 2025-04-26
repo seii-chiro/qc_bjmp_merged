@@ -32,7 +32,7 @@ const RemarksForm = ({
     const [remarksForm, setRemarksForm] = useState<ServiceProviderRemarksForm>({
         timestamp: "",
         created_by: "",
-        remarks: null
+        remark: null
     });
 
     // Initialize form with editing data if available
@@ -49,7 +49,7 @@ const RemarksForm = ({
     }, [currentUser, editingRemark]);
 
     const handleSubmit = () => {
-        if (remarksForm?.remarks) {
+        if (remarksForm?.remark) {
             if (editingRemark !== null) {
                 // Handle edit mode
                 const updatedRemark: ServiceProviderRemarksForm = {
@@ -66,12 +66,12 @@ const RemarksForm = ({
                 });
 
                 // Update the visitorForm remarks_data
-                setVisitorForm((prev: { remark_ids: any; }) => {
-                    const updatedRemarks = [...(prev.remark_ids || [])];
-                    updatedRemarks[editingRemark.index] = { remarks: remarksForm.remarks };
+                setVisitorForm((prev: { remarks_many_data: any; }) => {
+                    const updatedRemarks = [...(prev.remarks_many_data || [])];
+                    updatedRemarks[editingRemark.index] = { remarks: remarksForm.remark };
                     return {
                         ...prev,
-                        remark_ids: updatedRemarks
+                        remarks_many_data: updatedRemarks
                     };
                 });
             } else {
@@ -82,11 +82,11 @@ const RemarksForm = ({
                     created_by: `${currentUser.first_name} ${currentUser.last_name}`
                 };
 
-                setVisitorForm((prev: { remark_ids: any; }) => ({
+                setVisitorForm((prev: { remarks_many_data: any; }) => ({
                     ...prev,
-                    remark_ids: [
-                        ...(prev.remark_ids || []),
-                        { remarks: remarksForm?.remarks }
+                    remarks_many_data: [
+                        ...(prev.remarks_many_data || []),
+                        { remark: remarksForm?.remark }
                     ]
                 }));
 
@@ -97,7 +97,7 @@ const RemarksForm = ({
             setRemarksForm({
                 timestamp: "",
                 created_by: "",
-                remarks: null
+                remark: null
             });
             setEditingRemark(null);
             handleModalCancel();
@@ -108,7 +108,7 @@ const RemarksForm = ({
         setRemarksForm({
             timestamp: "",
             created_by: "",
-            remarks: null
+            remark: null
         });
         setEditingRemark(null);
         handleModalCancel();
@@ -124,24 +124,20 @@ const RemarksForm = ({
                             <Select
                                 optionFilterProp="label"
                                 showSearch
-                                value={remarksForm?.remarks}
+                                value={remarksForm?.remark}
                                 id="visitor-remarks"
                                 className="h-12"
                                 loading={spRemarksLoading}
                                 options={[
-                                    {
-                                        label: "Test",
-                                        value: 100
-                                    },
                                     ...(spRemarks?.map((remark) => ({
-                                        label: remark.remarks,
+                                        label: remark.remark,
                                         value: remark.id,
                                     })) ?? []),
                                 ]}
                                 onChange={value => {
                                     setRemarksForm(prev => ({
                                         ...prev,
-                                        remarks: value
+                                        remark: value
                                     }))
                                 }}
                             />

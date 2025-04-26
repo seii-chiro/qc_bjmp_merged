@@ -27,6 +27,7 @@ export type PersonForm = {
   multiple_birth_sibling_data?: MultiBirthSiblingForm[];
   ethnicity_province?: number;
   family_contact_relatives_data?: FamilyRelativesContactsForm[];
+  affiliation_id?: number[];
 };
 
 export type EducationalAttainmentForm = {
@@ -64,7 +65,7 @@ export type RemarksForm = {
 export type ServiceProviderRemarksForm = {
   timestamp: string;
   created_by: string;
-  remarks: number | null;
+  remark: number | null;
 };
 
 export type RequirementForm = {
@@ -193,7 +194,7 @@ type RemarksData = {
 };
 
 type ServiceProviderRemarksData = {
-  remarks: number | null;
+  remark: number | null;
 };
 
 export type VisitorPdl = {
@@ -319,16 +320,16 @@ export type NonPdlVisitorForm = {
 export type ServiceProviderForm = {
   record_status_id: number | null;
   visitor_type_id: number | null;
-  affiliation_id: number | null;
   service_type_id: number | null;
+  group_affiliation_id: number | null;
   sp_reg_no: string;
   id_number: string;
-  verified_at: string; // ISO date string
-  approved_at: string; // ISO date string
+  verified_at?: string; // ISO date string
+  approved_at?: string; // ISO date string
   person: number | null;
   visitor_status: number | null;
   verified_by: number | null;
   approved_by: number | null;
   remarks_data?: RemarksData[];
-  remark_ids: ServiceProviderRemarksData[];
+  remarks_many_data: ServiceProviderRemarksData[];
 };

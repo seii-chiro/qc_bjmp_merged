@@ -1,4 +1,5 @@
 import {
+  GroupAffiliation,
   NonPdlVisitorReasonVisit,
   PersonnelStatus,
   PersonnelType,
@@ -122,7 +123,7 @@ export async function getServiceProviderRemarks(
   token: string
 ): Promise<ServiceProviderRemarks[]> {
   const res = await fetch(
-    `${BASE_URL}/api/service-providers/service-provider-remarks/`,
+    `${BASE_URL}/api/service-providers/service-provider-remarks-many/`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -133,6 +134,21 @@ export async function getServiceProviderRemarks(
 
   if (!res.ok) {
     throw new Error("Failed to fetch Service Provider Remarks data.");
+  }
+
+  return res.json();
+}
+
+export async function getGroupAffiliations(token: string): Promise<GroupAffiliation[]> {
+  const res = await fetch(`${BASE_URL}/api/service-providers/service-provider-group-affiliations/`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch Affiliations data.");
   }
 
   return res.json();

@@ -7,7 +7,6 @@ import VisitorProfile from "../visitor-data-entry/visitorprofile";
 import Issue from "../visitor-data-entry/Issue";
 import { useMutation, useQueries } from "@tanstack/react-query";
 import {
-    getAffiliationTypes,
     getCivilStatus, getCountries, getCurrentUser, getGenders, getJail_Barangay,
     getJail_Municipality, getJail_Province, getJailRegion, getNationalities,
     getPrefixes, getReligion, getSuffixes, getUsers, getVisitorAppStatus
@@ -21,7 +20,7 @@ import Remarks from "./Remarks";
 import { BiometricRecordFace } from "@/lib/scanner-definitions";
 import { BASE_URL, BIOMETRIC, PERSON } from "@/lib/urls";
 import Identifiers from "../personnel-data-entry/Identifiers";
-import { getProvidedServices, getServiceProviderTypes } from "@/lib/additionalQueries";
+import { getGroupAffiliations, getProvidedServices, getServiceProviderTypes } from "@/lib/additionalQueries";
 
 const addPerson = async (payload: PersonForm, token: string) => {
 
@@ -114,6 +113,7 @@ const ServiceProviderRegistration = () => {
         religion_id: 1,
         media_data: [],
         multiple_birth_sibling_data: [],
+        affiliation_id: []
     })
     const [serviceProviderForm, setServiceProviderForm] = useState<ServiceProviderForm>({
         person: null,
@@ -121,15 +121,13 @@ const ServiceProviderRegistration = () => {
         sp_reg_no: "",
         visitor_status: null,
         remarks_data: [],
-        approved_at: "",
         approved_by: null,
-        verified_at: "",
         verified_by: null,
-        affiliation_id: null,
         visitor_type_id: null,
         record_status_id: 1,
         service_type_id: null,
-        remark_ids: []
+        remarks_many_data: [],
+        group_affiliation_id: null
     })
 
     const [icao, setIcao] = useState("")
@@ -299,10 +297,17 @@ const ServiceProviderRegistration = () => {
         }));
     };
 
+    // const deleteRemarksByIndex = (index: number) => {
+    //     setServiceProviderForm(prev => ({
+    //         ...prev,
+    //         remarks_data: prev?.remarks_data?.filter((_, i) => i !== index),
+    //     }))
+    // }
+
     const deleteRemarksByIndex = (index: number) => {
         setServiceProviderForm(prev => ({
             ...prev,
-            remarks_data: prev?.remarks_data?.filter((_, i) => i !== index),
+            remarks_many_data: prev?.remarks_many_data?.filter((_, i) => i !== index),
         }))
     }
 
@@ -310,7 +315,7 @@ const ServiceProviderRegistration = () => {
         queries: [
             {
                 queryKey: ['get-affiliations'],
-                queryFn: () => getAffiliationTypes(token ?? ""),
+                queryFn: () => getGroupAffiliations(token ?? ""),
                 staleTime: 10 * 60 * 1000
             },
             {
@@ -490,8 +495,8 @@ const ServiceProviderRegistration = () => {
     const addVisitorMutation = useMutation({
         mutationKey: ['add-visitor'],
         mutationFn: (id: number) => registerServiceProvider({ ...serviceProviderForm, person: id }, token ?? ""),
-        onSuccess: () => message.success('Successfully registered visitor'),
-        onError: () => message.error("Failed to register visitor")
+        onSuccess: () => message.success('Successfully registered service provider.'),
+        onError: (err) => message.error(err.message)
     })
 
 
@@ -809,13 +814,13 @@ const ServiceProviderRegistration = () => {
                                         showSearch
                                         optionFilterProp="label"
                                         options={affiliations?.map(affiliation => ({
-                                            label: affiliation?.affiliation_type,
+                                            label: affiliation?.name,
                                             value: affiliation?.id
                                         }))}
                                         onChange={value => {
                                             setServiceProviderForm(prev => ({
                                                 ...prev,
-                                                affiliation_id: value
+                                                group_affiliation_id: value
                                             }))
                                         }}
                                     />

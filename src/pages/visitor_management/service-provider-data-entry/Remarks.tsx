@@ -49,7 +49,7 @@ const Remarks = ({ setVisitorForm, currentUser, deleteRemarksByIndex }: Props) =
             key: index,
             timestamp: remarks?.timestamp,
             createdBy: remarks?.created_by,
-            remarks: spRemarks?.find(remark => remark?.id === remarks?.remarks)?.remarks ?? "N/A",
+            remarks: spRemarks?.find(remark => remark?.id === remarks?.remark)?.remark ?? "N/A",
             actions: (
                 <div className="flex gap-1.5 font-semibold transition-all ease-in-out duration-200 justify-center items-center">
                     <button

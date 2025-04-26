@@ -7,15 +7,17 @@ import { ColumnsType } from "antd/es/table"; // Import ColumnsType for type safe
 import { useQueries } from "@tanstack/react-query";
 import { getImpactLevels, getImpacts, getIssueCategories, getIssueStatuses, getIssueTypes, getRecommendedActions, getRiskLevels, getRisks } from "@/lib/queries";
 import { useTokenStore } from "@/store/useTokenStore";
+import { IssueStatus, IssueType, Risk } from "@/lib/definitions";
 
 export type IssueFormData = {
-    issue: string;
+    issueType: number | null;
+    issueCategory: number | null;
     risks: string;
     riskLevel: string;
     impactLevel: string;
     impact: string;
     recommendedAction: string;
-    status: string;
+    status: number | null;
 };
 
 const Issue = () => {
@@ -117,13 +119,21 @@ const Issue = () => {
     const columns: ColumnsType<IssueFormData> = [
         {
             title: "Issue",
-            dataIndex: "issue",
-            key: "issue",
+            dataIndex: "issueType",
+            key: "issueType",
+            render: (riskId: number) => {
+                const riskObj = issueTypes?.find((r: IssueType) => r.id === riskId);
+                return riskObj ? riskObj.name || riskObj.description : riskId;
+            }
         },
         {
             title: "Risks",
             dataIndex: "risks",
             key: "risks",
+            render: (riskId: number) => {
+                const riskObj = risks?.find((r: Risk) => r.id === riskId);
+                return riskObj ? riskObj.name || riskObj.description : riskId;
+            }
         },
         {
             title: "Risk Level",
@@ -149,6 +159,10 @@ const Issue = () => {
             title: "Status",
             dataIndex: "status",
             key: "status",
+            render: (riskId: number) => {
+                const riskObj = issueStatuses?.find((r: IssueStatus) => r.id === riskId);
+                return riskObj ? riskObj.name || riskObj.description : riskId;
+            }
         },
         {
             title: "Actions",

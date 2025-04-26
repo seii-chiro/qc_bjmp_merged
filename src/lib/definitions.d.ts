@@ -2210,6 +2210,7 @@ export type IssueType = {
   updated_at: string;
   name: string;
   remarks: string;
+  risk: string;
   description: string;
   created_by: number;
   updated_by: number;
@@ -2397,6 +2398,29 @@ export type ServiceProviderRemarks = {
   record_status: string;
   created_at: string; // ISO date string
   updated_at: string; // ISO date string
-  remarks: string;
-  service_provider: number;
+  remark: string;
+  description: string;
+};
+
+export type Affiliation = {
+  id: number;
+  organization_name: string;
+  role_or_position: string;
+  start_date: string; // ISO date string for YYYY-MM-DD
+  end_date: string; // ISO date string for YYYY-MM-DD
+  affiliation_type: string;
+  description: string;
+  record_status: string;
+  person: number;
+};
+
+export type GroupAffiliation = {
+  id: number;
+  created_by: string;
+  updated_by: string;
+  record_status: string;
+  created_at: string; // ISO date string
+  updated_at: string; // ISO date string
+  name: string;
+  description: string;
 };
