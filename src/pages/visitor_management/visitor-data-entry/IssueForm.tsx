@@ -145,7 +145,7 @@ const IssueForm: React.FC<IssueFormProps> = ({
             }
 
             // Handle successful submission
-            const responseData = await response.json();
+            // const responseData = await response.json();
             message.success('Issue successfully submitted!');
 
             // Add the new issue to the table or update it
