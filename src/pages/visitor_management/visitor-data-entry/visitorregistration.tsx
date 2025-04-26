@@ -54,7 +54,7 @@ const registerVisitor = async (visitor: VisitorForm, token: string) => {
 
     if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.email[0] || 'Error registering visitor');
+        throw new Error(JSON.stringify(errorData));
     }
 
     return res.json()
@@ -522,7 +522,7 @@ const VisitorRegistration = () => {
         mutationKey: ['add-visitor'],
         mutationFn: (id: number) => registerVisitor({ ...visitorForm, person_id: id }, token ?? ""),
         onSuccess: () => message.success('Successfully registered visitor'),
-        onError: () => message.error("Failed to register visitor")
+        onError: (err) => message.error(err.message)
     })
 
     // const addPersonMutation = useMutation({
@@ -651,7 +651,7 @@ const VisitorRegistration = () => {
             type: address?.type,
             region: regions?.find(region => region?.id === address?.region_id)?.desc,
             province: provinces?.find(province => province?.id === address?.province_id)?.desc,
-            municipality: municipalities?.find(municipality => municipality?.id === address?.city_municipality_id)?.desc,
+            municipality: municipalities?.find(municipality => municipality?.id === address?.municipality_id)?.desc,
             barangay: barangays?.find(barangay => barangay?.id === address?.barangay_id)?.desc,
             zip: address?.postal_code,
             country: countries?.find(country => country?.id === address?.country_id)?.country,

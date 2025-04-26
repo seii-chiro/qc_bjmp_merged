@@ -82,6 +82,7 @@ import NonPdlVisitorRegistration from "./pages/visitor_management/non-pdl-visito
 import ServiceProviderRegistration from "./pages/visitor_management/service-provider-data-entry/ServiceProviderRegistration.tsx";
 import Test from "./pages/Test.tsx";
 import VisitorProfileSlider from "./pages/LOG/visitor-profiles/VisitorProfileSlider.tsx";
+import QrReader from "./pages/screening/qr-reader/QrReader.tsx";
 
 // Lazy-loaded components
 const Home = React.lazy(() => import("./pages/dashboard/Home.tsx"));
@@ -299,6 +300,10 @@ function App() {
                 {
                     path: "screening",
                     element: <Screening />
+                },
+                {
+                    path: "screening/qr-code",
+                    element: <QrReader />
                 },
                 {
                     path: "pdls",

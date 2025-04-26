@@ -49,7 +49,7 @@ const AddAddress = ({ setPersonForm, handleAddressCancel, countries, provinces, 
         return {
             type: "Home",
             barangay_id: null,
-            city_municipality_id: null,
+            municipality_id: null,
             country_id: 128,
             is_active: true,
             is_current: false,
@@ -74,7 +74,7 @@ const AddAddress = ({ setPersonForm, handleAddressCancel, countries, provinces, 
             setAddressForm({
                 type: "Home",
                 barangay_id: null,
-                city_municipality_id: null,
+                municipality_id: null,
                 country_id: 128,
                 is_active: true,
                 is_current: false,
@@ -107,7 +107,7 @@ const AddAddress = ({ setPersonForm, handleAddressCancel, countries, provinces, 
         addressForm?.building_subdivision,
         addressForm?.street,
         barangay?.find(brgy => brgy?.id === addressForm?.barangay_id)?.desc,
-        municipality?.find(municipality => municipality?.id === addressForm?.city_municipality_id)?.desc,
+        municipality?.find(municipality => municipality?.id === addressForm?.municipality_id)?.desc,
         provinces?.find(province => province?.id === addressForm?.province_id)?.desc,
         regions?.find(region => region?.id === addressForm?.region_id)?.desc,
         "Philippines",
@@ -152,7 +152,7 @@ const AddAddress = ({ setPersonForm, handleAddressCancel, countries, provinces, 
         if (!addressForm.type) newErrors.type = "Address type is required";
         if (!addressForm.region_id) newErrors.region_id = "Region is required";
         if (!addressForm.province_id) newErrors.province_id = "Province is required";
-        if (!addressForm.city_municipality_id) newErrors.city_municipality_id = "City/Municipality is required";
+        if (!addressForm.municipality_id) newErrors.municipality_id = "City/Municipality is required";
         if (!addressForm.barangay_id) newErrors.barangay_id = "Barangay is required";
         if (!addressForm.country_id) newErrors.country_id = "Country is required";
 
@@ -200,7 +200,7 @@ const AddAddress = ({ setPersonForm, handleAddressCancel, countries, provinces, 
         setAddressForm({
             type: "Home",
             barangay_id: null,
-            city_municipality_id: null,
+            municipality_id: null,
             country_id: 128,
             is_active: true,
             is_current: false,
@@ -226,7 +226,7 @@ const AddAddress = ({ setPersonForm, handleAddressCancel, countries, provinces, 
         setAddressForm({
             type: "Home",
             barangay_id: null,
-            city_municipality_id: null,
+            municipality_id: null,
             country_id: 128,
             is_active: true,
             is_current: false,
@@ -356,8 +356,8 @@ const AddAddress = ({ setPersonForm, handleAddressCancel, countries, provinces, 
                         <div className='mt-2 w-full'>
                             <div className='flex gap-1 font-semibold'>City / Municipality<p className="text-red-600">*</p></div>
                             <Select
-                                value={addressForm?.city_municipality_id}
-                                status={errors.city_municipality_id ? "error" : ""}
+                                value={addressForm?.municipality_id}
+                                status={errors.municipality_id ? "error" : ""}
                                 showSearch
                                 optionFilterProp="label"
                                 className='mt-2 h-10 rounded-md outline-gray-300 w-full'
@@ -369,13 +369,13 @@ const AddAddress = ({ setPersonForm, handleAddressCancel, countries, provinces, 
                                     setAddressForm(prev => (
                                         {
                                             ...prev,
-                                            city_municipality_id: value
+                                            municipality_id: value
                                         }
                                     ));
-                                    if (errors.city_municipality_id) {
+                                    if (errors.municipality_id) {
                                         setErrors(prev => {
                                             const newErrors = { ...prev };
-                                            delete newErrors.city_municipality_id;
+                                            delete newErrors.municipality_id;
                                             return newErrors;
                                         });
                                     }
@@ -388,7 +388,7 @@ const AddAddress = ({ setPersonForm, handleAddressCancel, countries, provinces, 
                             <div className='flex gap-1 font-semibold'> District<p className="text-red-600">*</p></div>
                             <Input
                                 className='mt-2 w-full px-3 py-2 rounded-md outline-gray-300'
-                                value={municipality?.find(municipality => municipality?.id === addressForm?.city_municipality_id)?.legist_dist}
+                                value={municipality?.find(municipality => municipality?.id === addressForm?.municipality_id)?.legist_dist}
                             />
                         </div>
 

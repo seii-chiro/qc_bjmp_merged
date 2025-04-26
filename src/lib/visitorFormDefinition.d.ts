@@ -98,7 +98,7 @@ export type IdentifierForm = {
 export type AddressForm = {
   type: "Home" | "Work" | "Other";
   province_id: number | null;
-  city_municipality_id: number | null;
+  municipality_id: number | null;
   region_id: number | null;
   barangay_id: number | null;
   street: string | null;
