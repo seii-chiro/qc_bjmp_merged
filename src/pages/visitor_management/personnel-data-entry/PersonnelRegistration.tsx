@@ -123,7 +123,7 @@ const PersonnelRegistration = () => {
         organization_id: 1,
         personnel_app_status_id: null,
         personnel_reg_no: "",
-        personnel_type: null,
+        personnel_type_id: null,
         position_id: null,
         rank_id: null,
         remarks_data: [],
@@ -811,7 +811,7 @@ const PersonnelRegistration = () => {
                                     onChange={value => {
                                         setPersonnelForm(prev => ({
                                             ...prev,
-                                            personnel_type: value
+                                            personnel_type_id: value
                                         }))
                                     }}
                                 />

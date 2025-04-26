@@ -296,7 +296,7 @@ export type PersonnelForm = {
   id_number: string | null;
   shortname: string;
   date_joined: string;
-  personnel_type: number | null;
+  personnel_type_id: number | null;
   verified_by: number | null;
   approved_by: number | null;
 };
