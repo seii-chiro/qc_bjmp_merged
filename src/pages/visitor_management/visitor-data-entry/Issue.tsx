@@ -7,17 +7,17 @@ import { ColumnsType } from "antd/es/table"; // Import ColumnsType for type safe
 import { useQueries } from "@tanstack/react-query";
 import { getImpactLevels, getImpacts, getIssueCategories, getIssueStatuses, getIssueTypes, getRecommendedActions, getRiskLevels, getRisks } from "@/lib/queries";
 import { useTokenStore } from "@/store/useTokenStore";
-import { IssueStatus, IssueType, Risk } from "@/lib/definitions";
+import { IssueType, Risk } from "@/lib/definitions";
 
 export type IssueFormData = {
     issueType: number | null;
-    issueCategory: number | null;
-    risks: string;
-    riskLevel: string;
-    impactLevel: string;
-    impact: string;
+    issue_category_id: number | null;
+    risks: number | null;
+    risk_level_id: number | null;
+    impact_level_id: number | null;
+    impact_id: number | null;
     recommendedAction: string;
-    status: number | null;
+    issue_status_id: number | null;
 };
 
 const Issue = () => {
@@ -137,31 +137,38 @@ const Issue = () => {
         },
         {
             title: "Risk Level",
-            dataIndex: "riskLevel",
-            key: "riskLevel",
+            dataIndex: "risk_level_id",
+            key: "risk_level_id",
+            render: (riskLevelId: number) => {
+                const riskLevelObj = riskLevels?.find((r) => r.id === riskLevelId);
+                return riskLevelObj ? riskLevelObj.risk_severity : riskLevelId;
+            }
         },
         {
             title: "Impact Level",
-            dataIndex: "impactLevel",
-            key: "impactLevel",
+            dataIndex: "impact_level_id",
+            key: "impact_level_id",
+            render: (impactLevelId: number) => {
+                const impactLevelObj = impactLevels?.find((r) => r.id === impactLevelId);
+                return impactLevelObj ? impactLevelObj.impact_level : impactLevelId;
+            }
         },
         {
             title: "Impact",
-            dataIndex: "impact",
-            key: "impact",
-        },
-        {
-            title: "Recommended Action",
-            dataIndex: "recommendedAction",
-            key: "recommendedAction",
+            dataIndex: "impact_id",
+            key: "impact_id",
+            render: (impactId: number) => {
+                const impactObj = impact?.find((r) => r.id === impactId);
+                return impactObj ? impactObj.name : impactId;
+            }
         },
         {
             title: "Status",
-            dataIndex: "status",
-            key: "status",
-            render: (riskId: number) => {
-                const riskObj = issueStatuses?.find((r: IssueStatus) => r.id === riskId);
-                return riskObj ? riskObj.name || riskObj.description : riskId;
+            dataIndex: "issue_status_id",
+            key: "issue_status_id",
+            render: (statusId: number) => {
+                const statusObj = issueStatuses?.find((r) => r.id === statusId);
+                return statusObj ? statusObj.description : statusId;
             }
         },
         {
