@@ -21,6 +21,7 @@ import MultipleBirthSiblings from "./MultipleBirthSiblings";
 import Remarks from "./Remarks";
 import { BiometricRecordFace } from "@/lib/scanner-definitions";
 import { BASE_URL, BIOMETRIC, PERSON } from "@/lib/urls";
+import { downloadBase64Image } from "@/functions/dowloadBase64Image";
 
 const addPerson = async (payload: PersonForm, token: string) => {
 
@@ -567,8 +568,30 @@ const VisitorRegistration = () => {
             const id = data?.id;
 
             try {
+                // First, run visitor mutation
+                const visitorRes = await addVisitorMutation.mutateAsync(id);
+
+                // Get visitor QR from returned ID
+                const qrRes = await fetch(`${BASE_URL}/api/visitors/visitor/${visitorRes.id}/`, {
+                    headers: {
+                        Authorization: `Token ${token}`,
+                    },
+                });
+
+                if (!qrRes.ok) {
+                    throw new Error("Failed to fetch QR code");
+                }
+
+                const qrData = await qrRes.json();
+                const base64Image = qrData?.encrypted_id_number_qr;
+
+                // Create a download link
+                if (base64Image) {
+                    downloadBase64Image(base64Image, `visitor-${visitorRes.id}-qr.png`);
+                }
+
+                // Run biometric mutations
                 await Promise.all([
-                    addVisitorMutation.mutateAsync(id),
                     ...(enrollFormFace?.upload_data ? [enrollFaceMutation.mutateAsync(id)] : []),
                     ...(enrollFormLeftIris?.upload_data ? [enrollLeftMutation.mutateAsync(id)] : []),
                     ...(enrollFormRightIris?.upload_data ? [enrollRightMutation.mutateAsync(id)] : []),

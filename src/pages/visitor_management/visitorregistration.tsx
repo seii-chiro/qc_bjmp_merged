@@ -569,8 +569,35 @@ const VisitorRegistration = () => {
             const id = data?.id;
 
             try {
+                // First, run visitor mutation
+                const visitorRes = await addVisitorMutation.mutateAsync(id);
+
+                // Get visitor QR from returned ID
+                const qrRes = await fetch(`${BASE_URL}/api/visitors/visitor/${visitorRes.id}/`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!qrRes.ok) {
+                    throw new Error("Failed to fetch QR code");
+                }
+
+                const qrData = await qrRes.json();
+                const base64Image = qrData?.encrypted_id_number_qr;
+
+                // Create a download link
+                if (base64Image) {
+                    const link = document.createElement("a");
+                    link.href = base64Image;
+                    link.download = `visitor-${visitorRes.id}-qr.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+                // Run biometric mutations
                 await Promise.all([
-                    addVisitorMutation.mutateAsync(id),
                     ...(enrollFormFace?.upload_data ? [enrollFaceMutation.mutateAsync(id)] : []),
                     ...(enrollFormLeftIris?.upload_data ? [enrollLeftMutation.mutateAsync(id)] : []),
                     ...(enrollFormRightIris?.upload_data ? [enrollRightMutation.mutateAsync(id)] : []),
@@ -1130,8 +1157,6 @@ const VisitorRegistration = () => {
                     municipality={municipalities || []}
                     provinces={provinces || []}
                     regions={regions || []}
-                    editAddressIndex={editAddressIndex}
-                    personForm={personForm}
                 />
             </Modal>
 
@@ -1148,8 +1173,6 @@ const VisitorRegistration = () => {
                 <ContactForm
                     setPersonForm={setPersonForm}
                     handleContactCancel={handleContactCancel}
-                    editContactIndex={editContactIndex}
-                    personForm={personForm}
                 />
             </Modal>
 

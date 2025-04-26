@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import useEmblaCarousel from 'embla-carousel-react'
 import VisitorProfileId from './visitorIdentityLandscape'
 import { useCallback, useRef, useEffect, useState } from 'react'
@@ -5,14 +6,39 @@ import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
 import { FullScreen, useFullScreenHandle } from "react-full-screen"
 import html2canvas from "html2canvas"
 import jsPDF from "jspdf"
+import { useQuery } from '@tanstack/react-query'
+import { useTokenStore } from '@/store/useTokenStore'
+
+async function getOneVisitor(token: string): Promise<any[]> {
+    const res = await fetch("http://192.168.50.204:8001/api/visitors/visitor/7/", {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error("Failed to fetch PDLs data.");
+    }
+
+    return res.json();
+}
 
 const VisitorProfileSlider = () => {
+    const token = useTokenStore()?.token
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })
     const [autoPlay, setAutoPlay] = useState(true)
     const autoPlayIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
     const handle = useFullScreenHandle();
     const contentRef = useRef<HTMLDivElement>(null)
+
+    const { data } = useQuery({
+        queryKey: ['test'],
+        queryFn: () => getOneVisitor(token ?? "")
+    })
+
+    console.log(data)
 
     const downloadAsImage = async () => {
         if (!contentRef.current) return
